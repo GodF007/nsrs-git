@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>号码资源状态与操作关系图表</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1976d2;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+            overflow-x: auto;
+        }
+        .description {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #1976d2;
+        }
+        .navigation {
+            background-color: #1976d2;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .navigation a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            background-color: rgba(255,255,255,0.2);
+        }
+        .navigation a:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .tips {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>号码资源状态与操作关系图表</h1>
+        
+        <div class="navigation">
+            <strong>快速导航：</strong>
+            <a href="#mindmap">思维导图</a>
+            <a href="#flowchart">状态流转图</a>
+            <a href="#decision">操作决策图</a>
+            <a href="#matrix">状态转换矩阵</a>
+        </div>
+        
+        <div class="tips">
+            <strong>使用说明：</strong>
+            <ul>
+                <li>本页面展示了号码资源管理系统的状态与操作关系图表</li>
+                <li>所有图表都是SVG格式，可以无损缩放</li>
+                <li>建议使用现代浏览器（Chrome、Firefox、Edge等）查看</li>
+                <li>如果图表显示不完整，请尝试横向滚动或调整浏览器窗口大小</li>
+            </ul>
+        </div>
+        
+        <h2 id="mindmap">1. 思维导图</h2>
+        <div class="description">
+            <strong>说明：</strong>以号码资源状态管理为中心，展示状态枚举、操作类型、业务规则、约束条件和核心流程的关系。
+        </div>
+        <div class="chart-container">
+            <svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                </marker>
+                <style>
+                  .central-node { fill: #1976d2; stroke: #0d47a1; stroke-width: 3; }
+                  .status-node { fill: #4fc3f7; stroke: #0288d1; stroke-width: 2; }
+                  .operation-node { fill: #81c784; stroke: #388e3c; stroke-width: 2; }
+                  .rule-node { fill: #ffb74d; stroke: #f57c00; stroke-width: 2; }
+                  .constraint-node { fill: #f48fb1; stroke: #c2185b; stroke-width: 2; }
+                  .central-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; fill: white; }
+                  .node-text { font-family: Arial, sans-serif; font-size: 11px; text-anchor: middle; }
+                  .small-text { font-family: Arial, sans-serif; font-size: 9px; text-anchor: middle; }
+                  .connection { stroke: #666; stroke-width: 2; }
+                  .thick-connection { stroke: #333; stroke-width: 3; }
+                </style>
+              </defs>
+              
+              <!-- 中心节点 -->
+              <ellipse cx="600" cy="400" rx="80" ry="40" class="central-node" />
+              <text x="600" y="405" class="central-text">号码资源</text>
+              <text x="600" y="420" class="central-text">状态管理</text>
+              
+              <!-- 状态分支 -->
+              <g id="status-branch">
+                <text x="200" y="50" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">状态枚举</text>
+                
+                <!-- 第一层：基础状态 -->
+                <ellipse cx="80" cy="100" rx="45" ry="22" class="status-node" />
+                <text x="80" y="105" class="node-text">空闲(1)</text>
+                
+                <ellipse cx="200" cy="100" rx="45" ry="22" class="status-node" />
+                <text x="200" y="105" class="node-text">预留(2)</text>
+                
+                <ellipse cx="320" cy="100" rx="45" ry="22" class="status-node" />
+                <text x="320" y="105" class="node-text">已分配(3)</text>
+                
+                <!-- 第二层：使用状态 -->
+                <ellipse cx="140" cy="180" rx="45" ry="22" class="status-node" />
+                <text x="140" y="185" class="node-text">已激活(4)</text>
+                
+                <ellipse cx="260" cy="180" rx="45" ry="22" class="status-node" />
+                <text x="260" y="185" class="node-text">已使用(5)</text>
+                
+                <!-- 第三层：异常状态 -->
+                <ellipse cx="80" cy="260" rx="45" ry="22" class="status-node" />
+                <text x="80" y="265" class="node-text">已冻结(6)</text>
+                
+                <ellipse cx="320" cy="260" rx="45" ry="22" class="status-node" />
+                <text x="320" y="265" class="node-text">已锁定(7)</text>
+              </g>
+              
+              <!-- 操作分支 -->
+              <g id="operation-branch">
+                <text x="1000" y="50" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">操作类型</text>
+                
+                <!-- 第一行：基础操作 -->
+                <rect x="880" y="85" width="55" height="28" class="operation-node" />
+                <text x="907" y="103" class="node-text">预留</text>
+                
+                <rect x="950" y="85" width="55" height="28" class="operation-node" />
+                <text x="977" y="103" class="node-text">分配</text>
+                
+                <rect x="1020" y="85" width="55" height="28" class="operation-node" />
+                <text x="1047" y="103" class="node-text">激活</text>
+                
+                <rect x="1090" y="85" width="55" height="28" class="operation-node" />
+                <text x="1117" y="103" class="node-text">冻结</text>
+                
+                <!-- 第二行：状态操作 -->
+                <rect x="880" y="135" width="55" height="28" class="operation-node" />
+                <text x="907" y="153" class="node-text">解冻</text>
+                
+                <rect x="950" y="135" width="55" height="28" class="operation-node" />
+                <text x="977" y="153" class="node-text">释放</text>
+                
+                <rect x="1020" y="135" width="55" height="28" class="operation-node" />
+                <text x="1047" y="153" class="node-text">回收</text>
+                
+                <!-- 第三行：管理操作 -->
+                <rect x="915" y="185" width="55" height="28" class="operation-node" />
+                <text x="942" y="203" class="node-text">修改</text>
+                
+                <rect x="985" y="185" width="55" height="28" class="operation-node" />
+                <text x="1012" y="203" class="node-text">删除</text>
+              </g>
+              
+              <!-- 业务规则分支 -->
+              <g id="rules-branch">
+                <text x="200" y="550" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">业务规则</text>
+                
+                <!-- 单向性原则 -->
+                <rect x="50" y="580" width="100" height="40" class="rule-node" />
+                <text x="100" y="595" class="small-text">单向性原则</text>
+                <text x="100" y="610" class="small-text">状态转换不可逆</text>
+                
+                <!-- 权限控制 -->
+                <rect x="170" y="580" width="100" height="40" class="rule-node" />
+                <text x="220" y="595" class="small-text">权限控制</text>
+                <text x="220" y="610" class="small-text">操作需要权限</text>
+                
+                <!-- 数据完整性 -->
+                <rect x="290" y="580" width="100" height="40" class="rule-node" />
+                <text x="340" y="595" class="small-text">数据完整性</text>
+                <text x="340" y="610" class="small-text">维护数据一致</text>
+                
+                <!-- 审计追踪 -->
+                <rect x="50" y="640" width="100" height="40" class="rule-node" />
+                <text x="100" y="655" class="small-text">审计追踪</text>
+                <text x="100" y="670" class="small-text">记录操作日志</text>
+                
+                <!-- 事务控制 -->
+                <rect x="170" y="640" width="100" height="40" class="rule-node" />
+                <text x="220" y="655" class="small-text">事务控制</text>
+                <text x="220" y="670" class="small-text">保证原子性</text>
+                
+                <!-- 状态检查 -->
+                <rect x="290" y="640" width="100" height="40" class="rule-node" />
+                <text x="340" y="655" class="small-text">状态检查</text>
+                <text x="340" y="670" class="small-text">验证前置条件</text>
+              </g>
+              
+              <!-- 约束条件分支 -->
+              <g id="constraints-branch">
+                <text x="1000" y="550" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">约束条件</text>
+                
+                <!-- 解冻限制 -->
+                <rect x="850" y="580" width="100" height="40" class="constraint-node" />
+                <text x="900" y="595" class="small-text">解冻限制</text>
+                <text x="900" y="610" class="small-text">固定恢复激活</text>
+                
+                <!-- 回收特殊性 -->
+                <rect x="970" y="580" width="100" height="40" class="constraint-node" />
+                <text x="1020" y="595" class="small-text">回收特殊性</text>
+                <text x="1020" y="610" class="small-text">可从任意状态</text>
+                
+                <!-- 锁定处理 -->
+                <rect x="1090" y="580" width="100" height="40" class="constraint-node" />
+                <text x="1140" y="595" class="small-text">锁定处理</text>
+                <text x="1140" y="610" class="small-text">只能回收解除</text>
+                
+                <!-- 并发控制 -->
+                <rect x="850" y="640" width="100" height="40" class="constraint-node" />
+                <text x="900" y="655" class="small-text">并发控制</text>
+                <text x="900" y="670" class="small-text">乐观锁机制</text>
+                
+                <!-- 统计同步 -->
+                <rect x="970" y="640" width="100" height="40" class="constraint-node" />
+                <text x="1020" y="655" class="small-text">统计同步</text>
+                <text x="1020" y="670" class="small-text">更新号段统计</text>
+                
+                <!-- 异常处理 -->
+                <rect x="1090" y="640" width="100" height="40" class="constraint-node" />
+                <text x="1140" y="655" class="small-text">异常处理</text>
+                <text x="1140" y="670" class="small-text">业务异常回滚</text>
+              </g>
+              
+              <!-- 核心流程分支 -->
+              <g id="process-branch">
+                <text x="600" y="150" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">核心流程</text>
+                
+                <!-- 状态检查 -->
+                <ellipse cx="500" cy="200" rx="60" ry="25" class="rule-node" />
+                <text x="500" y="205" class="node-text">状态检查</text>
+                
+                <!-- 业务逻辑 -->
+                <ellipse cx="600" cy="200" rx="60" ry="25" class="rule-node" />
+                <text x="600" y="205" class="node-text">业务逻辑</text>
+                
+                <!-- 数据更新 -->
+                <ellipse cx="700" cy="200" rx="60" ry="25" class="rule-node" />
+                <text x="700" y="205" class="node-text">数据更新</text>
+                
+                <!-- 日志记录 -->
+                <ellipse cx="550" cy="260" rx="60" ry="25" class="rule-node" />
+                <text x="550" y="265" class="node-text">日志记录</text>
+                
+                <!-- 统计更新 -->
+                <ellipse cx="650" cy="260" rx="60" ry="25" class="rule-node" />
+                <text x="650" y="265" class="node-text">统计更新</text>
+              </g>
+              
+              <!-- 连接线 -->
+              <!-- 中心到各分支的主连接（优化布局） -->
+              <path d="M 550 380 Q 400 320 200 180" fill="none" class="thick-connection" />
+              <path d="M 650 380 Q 800 320 1000 140" fill="none" class="thick-connection" />
+              <path d="M 580 430 Q 400 480 200 520" fill="none" class="thick-connection" />
+              <path d="M 620 430 Q 800 480 1000 520" fill="none" class="thick-connection" />
+              <line x1="600" y1="360" x2="600" y2="290" class="thick-connection" />
+              
+              <!-- 状态分支内部连接（层次化布局） -->
+              <!-- 第一层横向连接 -->
+              <line x1="125" y1="100" x2="155" y2="100" class="connection" />
+              <line x1="245" y1="100" x2="275" y2="100" class="connection" />
+              
+              <!-- 第一层到第二层的连接 -->
+              <path d="M 200 122 Q 170 150 140 158" fill="none" class="connection" />
+              <path d="M 320 122 Q 290 150 260 158" fill="none" class="connection" />
+              
+              <!-- 第二层横向连接 -->
+              <line x1="185" y1="180" x2="215" y2="180" class="connection" />
+              
+              <!-- 第二层到第三层的连接 -->
+              <path d="M 140 202 Q 110 230 80 238" fill="none" class="connection" />
+              <path d="M 260 202 Q 290 230 320 238" fill="none" class="connection" />
+              
+              <!-- 操作分支内部连接（整齐网格布局） -->
+              <!-- 第一行横向连接 -->
+              <line x1="935" y1="99" x2="950" y2="99" class="connection" />
+              <line x1="1005" y1="99" x2="1020" y2="99" class="connection" />
+              <line x1="1075" y1="99" x2="1090" y2="99" class="connection" />
+              
+              <!-- 第二行横向连接 -->
+              <line x1="935" y1="149" x2="950" y2="149" class="connection" />
+              <line x1="1005" y1="149" x2="1020" y2="149" class="connection" />
+              
+              <!-- 第三行横向连接 -->
+              <line x1="970" y1="199" x2="985" y2="199" class="connection" />
+              
+              <!-- 垂直连接（层次结构） -->
+              <line x1="907" y1="113" x2="907" y2="135" class="connection" />
+              <line x1="977" y1="113" x2="977" y2="135" class="connection" />
+              <line x1="1047" y1="113" x2="1047" y2="135" class="connection" />
+              
+              <!-- 第二行到第三行的连接 -->
+              <path d="M 977 163 Q 960 175 942 185" fill="none" class="connection" />
+              <path d="M 977 163 Q 995 175 1012 185" fill="none" class="connection" />
+              
+              <!-- 核心流程连接（水平流向） -->
+              <line x1="560" y1="200" x2="580" y2="200" class="connection" />
+              <line x1="620" y1="200" x2="640" y2="200" class="connection" />
+              <line x1="660" y1="200" x2="680" y2="200" class="connection" />
+              <path d="M 550 225 Q 550 240 550 260" fill="none" class="connection" />
+              <path d="M 650 225 Q 650 240 650 260" fill="none" class="connection" />
+              
+              <!-- 标题 -->
+              <text x="600" y="30" style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle;">号码资源状态与操作关系思维导图</text>
+              
+              <!-- 图例 -->
+              <g id="legend">
+                <text x="50" y="750" style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold;">图例：</text>
+                
+                <ellipse cx="120" cy="770" rx="25" ry="12" class="central-node" />
+                <text x="160" y="775" style="font-family: Arial, sans-serif; font-size: 12px;">核心概念</text>
+                
+                <ellipse cx="250" cy="770" rx="25" ry="12" class="status-node" />
+                <text x="290" y="775" style="font-family: Arial, sans-serif; font-size: 12px;">状态枚举</text>
+                
+                <rect x="370" y="760" width="30" height="20" class="operation-node" />
+                <text x="410" y="775" style="font-family: Arial, sans-serif; font-size: 12px;">操作类型</text>
+                
+                <rect x="490" y="760" width="30" height="20" class="rule-node" />
+                <text x="530" y="775" style="font-family: Arial, sans-serif; font-size: 12px;">业务规则</text>
+                
+                <rect x="610" y="760" width="30" height="20" class="constraint-node" />
+                <text x="650" y="775" style="font-family: Arial, sans-serif; font-size: 12px;">约束条件</text>
+              </g>
+            </svg>
+        </div>
+        
+        <h2 id="flowchart">2. 状态流转图</h2>
+        <div class="description">
+            <strong>说明：</strong>展示号码资源在不同状态间的转换路径，包括正常流转和回收操作。
+        </div>
+        <div class="chart-container">
+            <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                </marker>
+                <style>
+                  .state-box { fill: #e1f5fe; stroke: #0277bd; stroke-width: 2; }
+                  .state-text { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+                  .operation-text { font-family: Arial, sans-serif; font-size: 10px; fill: #d32f2f; }
+                  .arrow { stroke: #333; stroke-width: 2; marker-end: url(#arrowhead2); }
+                  .recycle-arrow { stroke: #f44336; stroke-width: 2; marker-end: url(#arrowhead2); stroke-dasharray: 5,5; }
+                </style>
+              </defs>
+              
+              <!-- 状态节点 -->
+              <!-- 空闲 -->
+              <rect x="50" y="50" width="80" height="40" class="state-box" />
+              <text x="90" y="75" class="state-text">空闲(1)</text>
+              
+              <!-- 预留 -->
+              <rect x="200" y="50" width="80" height="40" class="state-box" />
+              <text x="240" y="75" class="state-text">预留(2)</text>
+              
+              <!-- 已分配 -->
+              <rect x="350" y="50" width="80" height="40" class="state-box" />
+              <text x="390" y="75" class="state-text">已分配(3)</text>
+              
+              <!-- 已激活 -->
+              <rect x="500" y="50" width="80" height="40" class="state-box" />
+              <text x="540" y="75" class="state-text">已激活(4)</text>
+              
+              <!-- 已使用 -->
+              <rect x="650" y="50" width="80" height="40" class="state-box" />
+              <text x="690" y="75" class="state-text">已使用(5)</text>
+              
+              <!-- 已冻结 -->
+              <rect x="500" y="200" width="80" height="40" class="state-box" />
+              <text x="540" y="225" class="state-text">已冻结(6)</text>
+              
+              <!-- 已锁定 -->
+              <rect x="350" y="350" width="80" height="40" class="state-box" />
+              <text x="390" y="375" class="state-text">已锁定(7)</text>
+              
+              <!-- 正常流转箭头 -->
+              <!-- 空闲 -> 预留 -->
+              <line x1="130" y1="70" x2="200" y2="70" class="arrow" />
+              <text x="165" y="65" class="operation-text">预留</text>
+              
+              <!-- 空闲 -> 已分配 -->
+              <path d="M 130 80 Q 240 120 350 80" fill="none" class="arrow" />
+              <text x="240" y="110" class="operation-text">分配</text>
+              
+              <!-- 预留 -> 已分配 -->
+              <line x1="280" y1="70" x2="350" y2="70" class="arrow" />
+              <text x="315" y="65" class="operation-text">分配</text>
+              
+              <!-- 已分配 -> 已激活 -->
+              <line x1="430" y1="70" x2="500" y2="70" class="arrow" />
+              <text x="465" y="65" class="operation-text">激活</text>
+              
+              <!-- 已激活 -> 已使用 -->
+              <line x1="580" y1="70" x2="650" y2="70" class="arrow" />
+              <text x="615" y="65" class="operation-text">使用</text>
+              
+              <!-- 已激活 -> 已冻结 -->
+              <line x1="540" y1="90" x2="540" y2="200" class="arrow" />
+              <text x="555" y="145" class="operation-text">冻结</text>
+              
+              <!-- 已使用 -> 已冻结 -->
+              <path d="M 670 90 Q 620 150 560 200" fill="none" class="arrow" />
+              <text x="620" y="140" class="operation-text">冻结</text>
+              
+              <!-- 已冻结 -> 已激活 -->
+              <line x1="520" y1="200" x2="520" y2="90" class="arrow" />
+              <text x="505" y="145" class="operation-text">解冻</text>
+              
+              <!-- 释放操作箭头 -->
+              <!-- 已分配 -> 空闲 -->
+              <path d="M 350 80 Q 240 140 130 80" fill="none" class="arrow" />
+              <text x="240" y="130" class="operation-text">释放</text>
+              
+              <!-- 已激活 -> 空闲 -->
+              <path d="M 500 80 Q 300 160 130 80" fill="none" class="arrow" />
+              <text x="300" y="150" class="operation-text">释放</text>
+              
+              <!-- 已使用 -> 空闲 -->
+              <path d="M 650 80 Q 400 180 130 80" fill="none" class="arrow" />
+              <text x="400" y="170" class="operation-text">释放</text>
+              
+              <!-- 已冻结 -> 空闲 -->
+              <path d="M 500 220 Q 300 280 130 80" fill="none" class="arrow" />
+              <text x="300" y="270" class="operation-text">释放</text>
+              
+              <!-- 回收操作（虚线箭头，表示可从任意状态回收） -->
+              <line x1="240" y1="90" x2="90" y2="90" class="recycle-arrow" />
+              <line x1="390" y1="90" x2="90" y2="90" class="recycle-arrow" />
+              <line x1="540" y1="90" x2="90" y2="90" class="recycle-arrow" />
+              <line x1="690" y1="90" x2="90" y2="90" class="recycle-arrow" />
+              <line x1="540" y1="240" x2="90" y2="90" class="recycle-arrow" />
+              <line x1="390" y1="350" x2="90" y2="90" class="recycle-arrow" />
+              
+              <!-- 图例 -->
+              <text x="50" y="450" style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold;">图例：</text>
+              <line x1="50" y1="470" x2="100" y2="470" class="arrow" />
+              <text x="110" y="475" style="font-family: Arial, sans-serif; font-size: 12px;">正常状态转换</text>
+              <line x1="50" y1="490" x2="100" y2="490" class="recycle-arrow" />
+              <text x="110" y="495" style="font-family: Arial, sans-serif; font-size: 12px;">回收操作（可从任意状态）</text>
+              
+              <!-- 标题 -->
+              <text x="400" y="30" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">号码资源状态流转图</text>
+            </svg>
+        </div>
+        
+        <h2 id="decision">3. 操作决策流程图</h2>
+        <div class="description">
+            <strong>说明：</strong>展示号码操作的完整决策流程，从开始到结束的每个步骤。
+        </div>
+        <div class="chart-container">
+            <svg width="900" height="700" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                </marker>
+                <style>
+                  .decision-box { fill: #fff3e0; stroke: #f57c00; stroke-width: 2; }
+                  .action-box { fill: #e8f5e8; stroke: #388e3c; stroke-width: 2; }
+                  .error-box { fill: #ffebee; stroke: #d32f2f; stroke-width: 2; }
+                  .text { font-family: Arial, sans-serif; font-size: 11px; text-anchor: middle; }
+                  .arrow3 { stroke: #333; stroke-width: 1.5; marker-end: url(#arrowhead3); }
+                  .yes-text { font-family: Arial, sans-serif; font-size: 10px; fill: #388e3c; }
+                  .no-text { font-family: Arial, sans-serif; font-size: 10px; fill: #d32f2f; }
+                </style>
+              </defs>
+              
+              <!-- 开始 -->
+              <ellipse cx="450" cy="30" rx="40" ry="20" class="decision-box" />
+              <text x="450" y="35" class="text">开始操作</text>
+              
+              <!-- 检查号码是否存在 -->
+              <rect x="400" y="80" width="100" height="40" class="decision-box" />
+              <text x="450" y="105" class="text">号码是否存在？</text>
+              
+              <!-- 号码不存在 -->
+              <rect x="600" y="80" width="100" height="40" class="error-box" />
+              <text x="650" y="105" class="text">抛出异常</text>
+              
+              <!-- 获取当前状态 -->
+              <rect x="400" y="160" width="100" height="40" class="action-box" />
+              <text x="450" y="185" class="text">获取当前状态</text>
+              
+              <!-- 状态判断分支 -->
+              <rect x="200" y="240" width="80" height="30" class="decision-box" />
+              <text x="240" y="260" class="text">空闲(1)</text>
+              
+              <rect x="300" y="240" width="80" height="30" class="decision-box" />
+              <text x="340" y="260" class="text">预留(2)</text>
+              
+              <rect x="400" y="240" width="80" height="30" class="decision-box" />
+              <text x="440" y="260" class="text">已分配(3)</text>
+              
+              <rect x="500" y="240" width="80" height="30" class="decision-box" />
+              <text x="540" y="260" class="text">已激活(4)</text>
+              
+              <rect x="600" y="240" width="80" height="30" class="decision-box" />
+              <text x="640" y="260" class="text">已使用(5)</text>
+              
+              <rect x="400" y="320" width="80" height="30" class="decision-box" />
+              <text x="440" y="340" class="text">已冻结(6)</text>
+              
+              <rect x="500" y="320" width="80" height="30" class="decision-box" />
+              <text x="540" y="340" class="text">已锁定(7)</text>
+              
+              <!-- 操作类型判断 -->
+              <rect x="50" y="400" width="70" height="30" class="action-box" />
+              <text x="85" y="420" class="text">预留操作</text>
+              
+              <rect x="140" y="400" width="70" height="30" class="action-box" />
+              <text x="175" y="420" class="text">分配操作</text>
+              
+              <rect x="230" y="400" width="70" height="30" class="action-box" />
+              <text x="265" y="420" class="text">激活操作</text>
+              
+              <rect x="320" y="400" width="70" height="30" class="action-box" />
+              <text x="355" y="420" class="text">冻结操作</text>
+              
+              <rect x="410" y="400" width="70" height="30" class="action-box" />
+              <text x="445" y="420" class="text">解冻操作</text>
+              
+              <rect x="500" y="400" width="70" height="30" class="action-box" />
+              <text x="535" y="420" class="text">释放操作</text>
+              
+              <rect x="590" y="400" width="70" height="30" class="action-box" />
+              <text x="625" y="420" class="text">回收操作</text>
+              
+              <!-- 成功/失败结果 -->
+              <rect x="200" y="500" width="100" height="40" class="action-box" />
+              <text x="250" y="525" class="text">操作成功</text>
+              
+              <rect x="400" y="500" width="100" height="40" class="error-box" />
+              <text x="450" y="525" class="text">状态不匹配</text>
+              
+              <rect x="600" y="500" width="100" height="40" class="error-box" />
+              <text x="650" y="525" class="text">抛出异常</text>
+              
+              <!-- 记录日志和更新统计 -->
+              <rect x="200" y="580" width="100" height="40" class="action-box" />
+              <text x="250" y="605" class="text">记录操作日志</text>
+              
+              <rect x="350" y="580" width="100" height="40" class="action-box" />
+              <text x="400" y="605" class="text">更新号段统计</text>
+              
+              <!-- 连接线 -->
+              <line x1="450" y1="50" x2="450" y2="80" class="arrow3" />
+              
+              <line x1="500" y1="100" x2="600" y2="100" class="arrow3" />
+              <text x="550" y="95" class="no-text">否</text>
+              
+              <line x1="450" y1="120" x2="450" y2="160" class="arrow3" />
+              <text x="430" y="140" class="yes-text">是</text>
+              
+              <line x1="450" y1="200" x2="450" y2="240" class="arrow3" />
+              
+              <!-- 从状态到操作的连接线（简化显示主要路径） -->
+              <line x1="240" y1="270" x2="85" y2="400" class="arrow3" />
+              <line x1="240" y1="270" x2="175" y2="400" class="arrow3" />
+              <line x1="340" y1="270" x2="175" y2="400" class="arrow3" />
+              <line x1="440" y1="270" x2="265" y2="400" class="arrow3" />
+              <line x1="540" y1="270" x2="355" y2="400" class="arrow3" />
+              <line x1="640" y1="270" x2="355" y2="400" class="arrow3" />
+              <line x1="440" y1="350" x2="445" y2="400" class="arrow3" />
+              
+              <!-- 操作结果连接线 -->
+              <line x1="175" y1="430" x2="250" y2="500" class="arrow3" />
+              <line x1="355" y1="430" x2="450" y2="500" class="arrow3" />
+              <line x1="625" y1="430" x2="250" y2="500" class="arrow3" />
+              
+              <line x1="250" y1="540" x2="250" y2="580" class="arrow3" />
+              <line x1="300" y1="520" x2="400" y2="580" class="arrow3" />
+              
+              <!-- 标题 -->
+              <text x="450" y="20" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">号码操作决策流程图</text>
+            </svg>
+        </div>
+        
+        <h2 id="matrix">4. 状态转换矩阵</h2>
+        <div class="description">
+            <strong>说明：</strong>详细的状态转换矩阵，用颜色区分允许操作、禁止操作和特殊操作。
+        </div>
+        <div class="chart-container">
+            <svg width="1000" height="600" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <style>
+                  .matrix-header { fill: #1976d2; stroke: #0d47a1; stroke-width: 1; }
+                  .matrix-cell-allow { fill: #4caf50; stroke: #388e3c; stroke-width: 1; }
+                  .matrix-cell-deny { fill: #f44336; stroke: #d32f2f; stroke-width: 1; }
+                  .matrix-cell-special { fill: #ff9800; stroke: #f57c00; stroke-width: 1; }
+                  .header-text { font-family: Arial, sans-serif; font-size: 10px; text-anchor: middle; fill: white; font-weight: bold; }
+                  .cell-text { font-family: Arial, sans-serif; font-size: 9px; text-anchor: middle; }
+                  .allow-text { fill: white; font-weight: bold; }
+                  .deny-text { fill: white; }
+                  .special-text { fill: white; font-weight: bold; }
+                </style>
+              </defs>
+              
+              <!-- 标题 -->
+              <text x="500" y="30" style="font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle;">号码状态与操作转换矩阵</text>
+              
+              <!-- 表头 -->
+              <rect x="50" y="60" width="80" height="40" class="matrix-header" />
+              <text x="90" y="85" class="header-text">当前状态\操作</text>
+              
+              <!-- 操作列标题 -->
+              <rect x="130" y="60" width="80" height="40" class="matrix-header" />
+              <text x="170" y="85" class="header-text">预留</text>
+              
+              <rect x="210" y="60" width="80" height="40" class="matrix-header" />
+              <text x="250" y="85" class="header-text">分配</text>
+              
+              <rect x="290" y="60" width="80" height="40" class="matrix-header" />
+              <text x="330" y="85" class="header-text">激活</text>
+              
+              <rect x="370" y="60" width="80" height="40" class="matrix-header" />
+              <text x="410" y="85" class="header-text">冻结</text>
+              
+              <rect x="450" y="60" width="80" height="40" class="matrix-header" />
+              <text x="490" y="85" class="header-text">解冻</text>
+              
+              <rect x="530" y="60" width="80" height="40" class="matrix-header" />
+              <text x="570" y="85" class="header-text">释放</text>
+              
+              <rect x="610" y="60" width="80" height="40" class="matrix-header" />
+              <text x="650" y="85" class="header-text">回收</text>
+              
+              <rect x="690" y="60" width="80" height="40" class="matrix-header" />
+              <text x="730" y="85" class="header-text">修改</text>
+              
+              <rect x="770" y="60" width="80" height="40" class="matrix-header" />
+              <text x="810" y="85" class="header-text">删除</text>
+              
+              <!-- 状态行 -->
+              <!-- 空闲(1) -->
+              <rect x="50" y="100" width="80" height="40" class="matrix-header" />
+              <text x="90" y="125" class="header-text">空闲(1)</text>
+              
+              <rect x="130" y="100" width="80" height="40" class="matrix-cell-allow" />
+              <text x="170" y="125" class="cell-text allow-text">✓→预留</text>
+              
+              <rect x="210" y="100" width="80" height="40" class="matrix-cell-allow" />
+              <text x="250" y="125" class="cell-text allow-text">✓→已分配</text>
+              
+              <rect x="290" y="100" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="125" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="100" width="80" height="40" class="matrix-cell-deny" />
+              <text x="410" y="125" class="cell-text deny-text">✗</text>
+              
+              <rect x="450" y="100" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="125" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="100" width="80" height="40" class="matrix-cell-deny" />
+              <text x="570" y="125" class="cell-text deny-text">✗</text>
+              
+              <rect x="610" y="100" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="125" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="100" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="125" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="100" width="80" height="40" class="matrix-cell-allow" />
+              <text x="810" y="125" class="cell-text allow-text">✓</text>
+              
+              <!-- 预留(2) -->
+              <rect x="50" y="140" width="80" height="40" class="matrix-header" />
+              <text x="90" y="165" class="header-text">预留(2)</text>
+              
+              <rect x="130" y="140" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="165" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="140" width="80" height="40" class="matrix-cell-allow" />
+              <text x="250" y="165" class="cell-text allow-text">✓→已分配</text>
+              
+              <rect x="290" y="140" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="165" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="140" width="80" height="40" class="matrix-cell-deny" />
+              <text x="410" y="165" class="cell-text deny-text">✗</text>
+              
+              <rect x="450" y="140" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="165" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="140" width="80" height="40" class="matrix-cell-deny" />
+              <text x="570" y="165" class="cell-text deny-text">✗</text>
+              
+              <rect x="610" y="140" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="165" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="140" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="165" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="140" width="80" height="40" class="matrix-cell-allow" />
+              <text x="810" y="165" class="cell-text allow-text">✓</text>
+              
+              <!-- 已分配(3) -->
+              <rect x="50" y="180" width="80" height="40" class="matrix-header" />
+              <text x="90" y="205" class="header-text">已分配(3)</text>
+              
+              <rect x="130" y="180" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="205" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="180" width="80" height="40" class="matrix-cell-deny" />
+              <text x="250" y="205" class="cell-text deny-text">✗</text>
+              
+              <rect x="290" y="180" width="80" height="40" class="matrix-cell-allow" />
+              <text x="330" y="205" class="cell-text allow-text">✓→已激活</text>
+              
+              <rect x="370" y="180" width="80" height="40" class="matrix-cell-deny" />
+              <text x="410" y="205" class="cell-text deny-text">✗</text>
+              
+              <rect x="450" y="180" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="205" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="180" width="80" height="40" class="matrix-cell-allow" />
+              <text x="570" y="205" class="cell-text allow-text">✓→空闲</text>
+              
+              <rect x="610" y="180" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="205" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="180" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="205" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="180" width="80" height="40" class="matrix-cell-deny" />
+              <text x="810" y="205" class="cell-text deny-text">✗</text>
+              
+              <!-- 已激活(4) -->
+              <rect x="50" y="220" width="80" height="40" class="matrix-header" />
+              <text x="90" y="245" class="header-text">已激活(4)</text>
+              
+              <rect x="130" y="220" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="245" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="220" width="80" height="40" class="matrix-cell-deny" />
+              <text x="250" y="245" class="cell-text deny-text">✗</text>
+              
+              <rect x="290" y="220" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="245" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="220" width="80" height="40" class="matrix-cell-allow" />
+              <text x="410" y="245" class="cell-text allow-text">✓→已冻结</text>
+              
+              <rect x="450" y="220" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="245" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="220" width="80" height="40" class="matrix-cell-allow" />
+              <text x="570" y="245" class="cell-text allow-text">✓→空闲</text>
+              
+              <rect x="610" y="220" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="245" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="220" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="245" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="220" width="80" height="40" class="matrix-cell-deny" />
+              <text x="810" y="245" class="cell-text deny-text">✗</text>
+              
+              <!-- 已使用(5) -->
+              <rect x="50" y="260" width="80" height="40" class="matrix-header" />
+              <text x="90" y="285" class="header-text">已使用(5)</text>
+              
+              <rect x="130" y="260" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="285" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="260" width="80" height="40" class="matrix-cell-deny" />
+              <text x="250" y="285" class="cell-text deny-text">✗</text>
+              
+              <rect x="290" y="260" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="285" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="260" width="80" height="40" class="matrix-cell-allow" />
+              <text x="410" y="285" class="cell-text allow-text">✓→已冻结</text>
+              
+              <rect x="450" y="260" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="285" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="260" width="80" height="40" class="matrix-cell-allow" />
+              <text x="570" y="285" class="cell-text allow-text">✓→空闲</text>
+              
+              <rect x="610" y="260" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="285" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="260" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="285" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="260" width="80" height="40" class="matrix-cell-deny" />
+              <text x="810" y="285" class="cell-text deny-text">✗</text>
+              
+              <!-- 已冻结(6) -->
+              <rect x="50" y="300" width="80" height="40" class="matrix-header" />
+              <text x="90" y="325" class="header-text">已冻结(6)</text>
+              
+              <rect x="130" y="300" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="325" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="300" width="80" height="40" class="matrix-cell-deny" />
+              <text x="250" y="325" class="cell-text deny-text">✗</text>
+              
+              <rect x="290" y="300" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="325" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="300" width="80" height="40" class="matrix-cell-deny" />
+              <text x="410" y="325" class="cell-text deny-text">✗</text>
+              
+              <rect x="450" y="300" width="80" height="40" class="matrix-cell-allow" />
+              <text x="490" y="325" class="cell-text allow-text">✓→已激活</text>
+              
+              <rect x="530" y="300" width="80" height="40" class="matrix-cell-allow" />
+              <text x="570" y="325" class="cell-text allow-text">✓→空闲</text>
+              
+              <rect x="610" y="300" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="325" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="300" width="80" height="40" class="matrix-cell-allow" />
+              <text x="730" y="325" class="cell-text allow-text">✓</text>
+              
+              <rect x="770" y="300" width="80" height="40" class="matrix-cell-deny" />
+              <text x="810" y="325" class="cell-text deny-text">✗</text>
+              
+              <!-- 已锁定(7) -->
+              <rect x="50" y="340" width="80" height="40" class="matrix-header" />
+              <text x="90" y="365" class="header-text">已锁定(7)</text>
+              
+              <rect x="130" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="170" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="210" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="250" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="290" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="330" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="370" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="410" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="450" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="490" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="530" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="570" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="610" y="340" width="80" height="40" class="matrix-cell-special" />
+              <text x="650" y="365" class="cell-text special-text">✓→空闲</text>
+              
+              <rect x="690" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="730" y="365" class="cell-text deny-text">✗</text>
+              
+              <rect x="770" y="340" width="80" height="40" class="matrix-cell-deny" />
+              <text x="810" y="365" class="cell-text deny-text">✗</text>
+              
+              <!-- 图例 -->
+              <text x="50" y="420" style="font-family: Arial, sans-serif; font-size: 14px; font-weight: bold;">图例：</text>
+              
+              <rect x="50" y="440" width="30" height="20" class="matrix-cell-allow" />
+              <text x="90" y="455" style="font-family: Arial, sans-serif; font-size: 12px;">允许操作</text>
+              
+              <rect x="150" y="440" width="30" height="20" class="matrix-cell-deny" />
+              <text x="190" y="455" style="font-family: Arial, sans-serif; font-size: 12px;">禁止操作</text>
+              
+              <rect x="250" y="440" width="30" height="20" class="matrix-cell-special" />
+              <text x="290" y="455" style="font-family: Arial, sans-serif; font-size: 12px;">特殊操作（回收）</text>
+              
+              <!-- 说明文字 -->
+              <text x="50" y="490" style="font-family: Arial, sans-serif; font-size: 12px;">说明：</text>
+              <text x="50" y="510" style="font-family: Arial, sans-serif; font-size: 11px;">• ✓→目标状态：表示操作成功后的状态转换</text>
+              <text x="50" y="525" style="font-family: Arial, sans-serif; font-size: 11px;">• ✗：表示当前状态下不允许执行该操作</text>
+              <text x="50" y="540" style="font-family: Arial, sans-serif; font-size: 11px;">• 回收操作（橙色）：可以从任意状态执行，统一转换为空闲状态</text>
+              <text x="50" y="555" style="font-family: Arial, sans-serif; font-size: 11px;">• 解冻操作：固定恢复为已激活状态</text>
+            </svg>
+        </div>
+        
+        <div class="tips">
+            <strong>重要说明：</strong>
+            <ul>
+                <li><strong>状态转换的单向性：</strong>除了解冻和回收操作外，其他状态转换都是单向的，不可逆转</li>
+                <li><strong>解冻的特殊性：</strong>解冻操作固定将已冻结状态恢复为已激活状态，不记录冻结前的状态</li>
+                <li><strong>回收的万能性：</strong>回收操作可以从任意状态执行，统一转换为空闲状态</li>
+                <li><strong>锁定状态的限制：</strong>已锁定状态下只能执行回收操作，其他操作均被禁止</li>
+                <li><strong>业务完整性：</strong>每个操作都会记录操作日志并更新相关统计信息</li>
+            </ul>
+        </div>
+        
+        <div class="description">
+            <strong>如何使用本页面：</strong>
+            <ol>
+                <li>直接在浏览器中打开此HTML文件</li>
+                <li>使用页面顶部的导航链接快速跳转到不同图表</li>
+                <li>所有图表都支持缩放，可以调整浏览器窗口大小查看</li>
+                <li>建议使用全屏模式查看复杂的矩阵图表</li>
+                <li>可以将此文件分享给团队成员，无需额外软件即可查看</li>
+            </ol>
+        </div>
+     </div>
+  </body>
+  </html>

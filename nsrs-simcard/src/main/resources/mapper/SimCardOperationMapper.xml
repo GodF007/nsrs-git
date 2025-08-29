@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.simcard.mapper.SimCardOperationMapper">
+
+    <!-- 条件分页查询SIM卡操作记录 -->
+    <select id="selectOperationPage" resultType="com.nsrs.simcard.entity.SimCardOperation">
+        SELECT 
+            sco.*
+        FROM 
+            sim_card_operation sco
+        <where>
+            <if test="params.iccid != null and params.iccid != ''">
+                AND sco.iccid LIKE concat('%', #{params.iccid}, '%')
+            </if>
+            <if test="params.cardId != null">
+                AND sco.card_id = #{params.cardId}
+            </if>
+            <if test="params.operationType != null">
+                AND sco.operation_type = #{params.operationType}
+            </if>
+            <if test="params.operationTypes != null and params.operationTypes.size() > 0">
+                AND sco.operation_type IN
+                <foreach collection="params.operationTypes" item="type" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="params.operatorUserId != null">
+                AND sco.operator_user_id = #{params.operatorUserId}
+            </if>
+            <if test="params.startTime != null">
+                AND sco.operation_time &gt;= #{params.startTime}
+            </if>
+            <if test="params.endTime != null">
+                AND sco.operation_time &lt;= #{params.endTime}
+            </if>
+            <if test="params.resultStatus != null">
+                AND sco.result_status = #{params.resultStatus}
+            </if>
+            <if test="params.stockOutOrgId != null">
+                AND sco.stock_out_org_id = #{params.stockOutOrgId}
+            </if>
+            <if test="params.stockInOrgId != null">
+                AND sco.stock_in_org_id = #{params.stockInOrgId}
+            </if>
+        </where>
+        ORDER BY sco.operation_time DESC
+    </select>
+    
+</mapper> 

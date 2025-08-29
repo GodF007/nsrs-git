@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.msisdn.mapper.NumberResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nsrs.msisdn.entity.NumberResource">
+        <id column="number_id" property="numberId" />
+        <result column="number" property="number" />
+        <result column="number_type" property="numberType" />
+        <result column="segment_id" property="segmentId" />
+        <result column="level_id" property="levelId" />
+        <result column="pattern_id" property="patternId" />
+        <result column="hlr_id" property="hlrId" />
+        <result column="iccid" property="iccid" />
+        <result column="status" property="status" />
+        <result column="charge" property="charge" />
+        <result column="attributive_org" property="attributiveOrg" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="update_user_id" property="updateUserId" />
+    </resultMap>
+
+    <!-- 根据号码查询 -->
+    <select id="selectByNumber" resultMap="BaseResultMap">
+        SELECT * FROM number_resource WHERE number = #{number}
+    </select>
+
+    <!-- 创建分表 -->
+    <update id="createTable">
+        CREATE TABLE IF NOT EXISTS ${tableName} LIKE number_resource
+    </update>
+
+    <!-- 跨表查询 -->
+    <select id="crossTableQuery" resultMap="BaseResultMap">
+        ${sql}
+    </select>
+    
+    <!-- 跨表查询总数 -->
+    <select id="crossTableCount" resultType="java.lang.Long">
+        ${sql}
+    </select>
+    
+    <!-- 执行自定义SQL查询 -->
+    <select id="selectByCustomSql" resultMap="BaseResultMap">
+        ${sql}
+    </select>
+    
+    <!-- 批量查询号码资源（按号码） -->
+    <select id="selectByNumbers" resultMap="BaseResultMap">
+        SELECT * FROM number_resource 
+        WHERE number IN
+        <foreach collection="numbers" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </select>
+    
+    <!-- 批量更新号码状态（分表优化版本） -->
+    <update id="batchUpdateStatusByNumbers">
+        UPDATE number_resource 
+        SET status = CASE number
+        <foreach collection="numbers" item="number" index="index">
+            WHEN #{number} THEN #{statuses[${index}]}
+        </foreach>
+        END,
+        update_time = NOW()
+        WHERE number IN
+        <foreach collection="numbers" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    .login {
+        @apply w-full min-w-960 h-[100vh] flex;
+    }
+
+    .login-center-box {
+        @apply w-900 h-480 flex gap-10 m-auto rounded-[40px] bg-white dark:bg-dark-colorBgContainer;
+        box-shadow:
+            -20px 20px 60px #cbcfd1,
+            20px -20px 60px #ffffff;
+    }
+
+    .dark .login-center-box {
+        box-shadow:
+            -20px 20px 60px #23272a,
+            20px -20px 60px #2d3236;
+    }
+
+    .login-banner {
+        @apply w-500 box-border;
+    }
+
+    .lottie-wrapper {
+        @apply w-full h-full p-40 bg-slate-100 dark:bg-black rounded-[40px];
+    }
+
+    .login-form {
+        @apply w-400 box-border m-auto pr-10;
+        .ant-form {
+            @apply !w-full box-border;
+        }
+    }
+
+    .login-form-title {
+        @apply text-24 font-bold mb-16 text-center;
+    }
+
+    .system-logo {
+        @apply absolute top-16 left-16 flex items-center;
+    }
+
+    .system-logo > img {
+        @apply w-36 h-36;
+    }
+
+    .system-logo > span {
+        @apply text-24 font-bold px-16;
+    }
+
+    .setting {
+        @apply absolute top-16 right-16;
+    }
+
+    .header {
+        @apply flex items-center justify-between box-border w-full h-60 px-24 py-10 bg-light-colorBgContainer dark:bg-dark-colorBgContainer dark:border-b dark:border-dark-colorBorder shadow-boxShadowDrawerDown;
+    }
+
+    .main {
+        @apply overflow-auto box-border;
+        height: calc(100vh - 138px);
+    }
+
+    .sidebar-inline {
+        @apply relative h-[calc(100vh-80px)] box-border rounded-[8px] dark:!border dark:!border-dark-colorBorder;
+    }
+
+    .collapse-btn {
+        @apply absolute w-6 h-100 top-1/2 -right-9 -translate-y-1/2 cursor-pointer z-50;
+    }
+    .collapse-btn-expand:hover::before,
+    .collapse-btn-fold:hover::after {
+        @apply transform rotate-[10deg] origin-center transition-all duration-300 ease-in-out;
+    }
+    .collapse-btn-fold:hover::before,
+    .collapse-btn-expand:hover::after {
+        @apply transform -rotate-[10deg] origin-center transition-all duration-300 ease-in-out;
+    }
+    .collapse-btn::before,
+    .collapse-btn::after {
+        @apply content-[''] absolute -left-1 w-6 h-50 rounded-[3px] bg-light-colorBorder dark:bg-dark-colorBorder shadow-xl transform rotate-[0] transition-all duration-300 ease-in-out;
+    }
+    .collapse-btn::before {
+        @apply top-2;
+    }
+    .collapse-btn::after {
+        @apply bottom-2;
+    }
+
+    .tab-bar {
+        @apply w-full px-4 mb-10 py-4 h-48 overflow-x-auto flex flex-nowrap rounded-[8px] bg-light-colorBgContainer dark:!bg-dark-colorBgContainer dark:!border dark:!border-dark-colorBorder;
+    }
+    .tab-close-btn {
+        @apply w-0 h-0 transform origin-center transition-all duration-300 ease-in-out;
+    }
+    .tab {
+        @apply w-full h-full leading-[40px] box-border px-16 relative cursor-pointer rounded-tl-[8px] rounded-tr-[8px] transition-all duration-300 ease-in-out flex-shrink-0 whitespace-nowrap;
+    }
+    .tab:hover {
+        @apply text-light-colorPrimary dark:text-dark-colorPrimary;
+    }
+    .tab:hover > .tab-close-btn {
+        @apply w-14 h-14;
+    }
+    .tab::before,
+    .tab::after {
+        @apply content-[''] absolute bottom-0 h-2 w-0 bg-transparent transition-all duration-300 ease-in-out;
+    }
+    .tab::before {
+        @apply left-1/2;
+    }
+    .tab::after {
+        @apply right-1/2;
+    }
+    .tab-active {
+        @apply text-light-colorPrimary dark:text-dark-colorPrimary border-b-light-colorPrimary dark:border-b-dark-colorPrimary transition-all duration-300 ease-in-out bg-light-colorPrimaryBg dark:bg-dark-colorPrimaryBg;
+    }
+    .tab-active::before,
+    .tab-active::after {
+        @apply bg-light-colorPrimary dark:bg-dark-colorPrimary  w-[calc(50%)] transition-all duration-300 ease-in-out;
+    }
+    .tab-active::before {
+        @apply origin-right;
+    }
+    .tab-active::after {
+        @apply origin-left;
+    }
+
+    .wrapper {
+        @apply px-16 py-24 rounded-borderRadiusLG bg-white dark:bg-dark-colorBgContainer dark:!border dark:!border-dark-colorBorder;
+    }
+
+    .primary-text-btn {
+        @apply text-light-colorPrimary dark:text-dark-colorPrimary;
+    }
+    .error-text-btn {
+        @apply text-light-colorError dark:text-dark-colorError;
+    }
+    .warning-text-btn {
+        @apply text-light-colorWarning dark:text-dark-colorWarning;
+    }
+    .success-text-btn {
+        @apply text-light-colorSuccess dark:text-dark-colorSuccess;
+    }
+}
+
+#nprogress .bar {
+    @apply !bg-light-colorPrimary dark:!bg-dark-colorPrimary;
+}
+
+.animate-enter {
+    @apply opacity-0 scale-[1.2] blur-[2px];
+}
+
+.animate-enter-active {
+    @apply opacity-100 scale-100 blur-[0] ease-in-out duration-[300ms];
+}
+
+.animate-exit {
+    @apply opacity-100 scale-100 blur-[0];
+}
+
+.animate-exit-active {
+    @apply opacity-0 scale-[0.8] blur-[2px] ease-in-out duration-[300ms];
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    @apply animate-none mix-blend-normal;
+}
+
+::view-transition-old(root),
+.dark::view-transition-new(root) {
+    @apply z-[1];
+}
+
+::view-transition-new(root),
+.dark::view-transition-old(root) {
+    @apply z-[9999];
+}

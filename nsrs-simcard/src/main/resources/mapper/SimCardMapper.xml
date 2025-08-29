@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.simcard.mapper.SimCardMapper">
+
+    <!-- 批量插入SIM卡 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO sim_card (
+            iccid, imsi, batch_id, card_type_id, spec_id, data_type, 
+            supplier_id, org_id, status, remark, create_time, update_time, 
+            create_user_id, update_user_id
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.iccid}, #{item.imsi}, #{item.batchId}, #{item.cardTypeId}, 
+                #{item.specId}, #{item.dataType}, #{item.supplierId}, #{item.orgId}, 
+                #{item.status}, #{item.remark}, now(), now(), 
+                #{item.createUserId}, #{item.updateUserId}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 条件分页查询SIM卡 -->
+    <select id="selectSimCardPage" resultType="com.nsrs.simcard.entity.SimCard">
+        SELECT 
+            sc.*
+        FROM 
+            sim_card sc
+        <where>
+            <if test="params.iccid != null and params.iccid != ''">
+                AND sc.iccid LIKE concat('%', #{params.iccid}, '%')
+            </if>
+            <if test="params.imsi != null and params.imsi != ''">
+                AND sc.imsi LIKE concat('%', #{params.imsi}, '%')
+            </if>
+            <if test="params.batchId != null">
+                AND sc.batch_id = #{params.batchId}
+            </if>
+            <if test="params.cardTypeId != null">
+                AND sc.card_type_id = #{params.cardTypeId}
+            </if>
+            <if test="params.specId != null">
+                AND sc.spec_id = #{params.specId}
+            </if>
+            <if test="params.dataType != null">
+                AND sc.data_type = #{params.dataType}
+            </if>
+            <if test="params.supplierId != null">
+                AND sc.supplier_id = #{params.supplierId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+            <if test="params.status != null">
+                AND sc.status = #{params.status}
+            </if>
+            <if test="params.statuses != null and params.statuses.size() > 0">
+                AND sc.status IN
+                <foreach collection="params.statuses" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY sc.create_time DESC
+    </select>
+    
+    <!-- 统计各状态SIM卡数量 -->
+    <select id="countByStatus" resultType="java.util.Map">
+        SELECT 
+            sc.status,
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        <where>
+            <if test="params.batchId != null">
+                AND sc.batch_id = #{params.batchId}
+            </if>
+            <if test="params.cardTypeId != null">
+                AND sc.card_type_id = #{params.cardTypeId}
+            </if>
+            <if test="params.specId != null">
+                AND sc.spec_id = #{params.specId}
+            </if>
+            <if test="params.dataType != null">
+                AND sc.data_type = #{params.dataType}
+            </if>
+            <if test="params.supplierId != null">
+                AND sc.supplier_id = #{params.supplierId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+        </where>
+        GROUP BY sc.status
+    </select>
+    
+    <!-- 批量更新SIM卡状态 -->
+    <update id="batchUpdateStatus">
+        UPDATE sim_card
+        SET status = #{status}, update_time = now()
+        WHERE card_id IN
+        <foreach collection="cardIds" item="cardId" open="(" separator="," close=")">
+            #{cardId}
+        </foreach>
+    </update>
+    
+    <!-- 按卡类型统计SIM卡数量 -->
+    <select id="countByCardType" resultType="java.util.Map">
+        SELECT 
+            sct.type_name as cardType,
+            sct.type_code as cardTypeCode,
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        LEFT JOIN sim_card_type sct ON sc.card_type_id = sct.type_id
+        <where>
+            <if test="params.status != null">
+                AND sc.status = #{params.status}
+            </if>
+            <if test="params.batchId != null">
+                AND sc.batch_id = #{params.batchId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+        </where>
+        GROUP BY sc.card_type_id, sct.type_name, sct.type_code
+        ORDER BY count DESC
+    </select>
+    
+    <!-- 按组织统计SIM卡数量 -->
+    <select id="countByOrganization" resultType="java.util.Map">
+        SELECT 
+            sc.org_id as orgId,
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        <where>
+            <if test="params.status != null">
+                AND sc.status = #{params.status}
+            </if>
+            <if test="params.batchId != null">
+                AND sc.batch_id = #{params.batchId}
+            </if>
+            <if test="params.cardType != null">
+                AND sc.card_type_id = #{params.cardType}
+            </if>
+        </where>
+        GROUP BY sc.org_id
+        ORDER BY count DESC
+    </select>
+    
+    <!-- 告警系统专用：统计可用库存数量 -->
+    <select id="countAvailableByAlertConditions" resultType="java.lang.Integer">
+        SELECT 
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        <where>
+            <!-- 统计已发布和已分配状态的SIM卡 -->
+            AND sc.status IN (1, 2)
+            <if test="params.cardTypeId != null">
+                AND sc.card_type_id = #{params.cardTypeId}
+            </if>
+            <if test="params.specId != null">
+                AND sc.spec_id = #{params.specId}
+            </if>
+            <if test="params.supplierId != null">
+                AND sc.supplier_id = #{params.supplierId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 告警系统专用：统计总库存数量 -->
+    <select id="countTotalByAlertConditions" resultType="java.lang.Integer">
+        SELECT 
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        <where>
+            <if test="params.cardTypeId != null">
+                AND sc.card_type_id = #{params.cardTypeId}
+            </if>
+            <if test="params.specId != null">
+                AND sc.spec_id = #{params.specId}
+            </if>
+            <if test="params.supplierId != null">
+                AND sc.supplier_id = #{params.supplierId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 告警系统专用：按状态统计库存数量 -->
+    <select id="countByStatusAndAlertConditions" resultType="java.util.Map">
+        SELECT 
+            sc.status,
+            COUNT(1) as count
+        FROM 
+            sim_card sc
+        <where>
+            <if test="params.cardTypeId != null">
+                AND sc.card_type_id = #{params.cardTypeId}
+            </if>
+            <if test="params.specId != null">
+                AND sc.spec_id = #{params.specId}
+            </if>
+            <if test="params.supplierId != null">
+                AND sc.supplier_id = #{params.supplierId}
+            </if>
+            <if test="params.orgId != null">
+                AND sc.org_id = #{params.orgId}
+            </if>
+        </where>
+        GROUP BY sc.status
+    </select>
+    
+    <!-- 告警系统专用：批量统计库存数量 -->
+    <select id="batchCountInventoryForAlerts" resultType="java.util.Map">
+        SELECT 
+            CONCAT_WS('_', 
+                COALESCE(sc.card_type_id, 'null'),
+                COALESCE(sc.spec_id, 'null'), 
+                COALESCE(sc.supplier_id, 'null'),
+                COALESCE(sc.org_id, 'null')
+            ) as config_key,
+            sc.card_type_id,
+            sc.spec_id,
+            sc.supplier_id,
+            sc.org_id,
+            SUM(CASE WHEN sc.status IN (1, 2) THEN 1 ELSE 0 END) as available_count,
+            COUNT(1) as total_count
+        FROM 
+            sim_card sc
+        WHERE 
+            (
+            <foreach collection="alertConfigs" item="config" separator=" OR ">
+                (
+                    <if test="config.cardTypeId != null">
+                        sc.card_type_id = #{config.cardTypeId}
+                    </if>
+                    <if test="config.cardTypeId == null">
+                        sc.card_type_id IS NULL
+                    </if>
+                    <if test="config.specId != null">
+                        AND sc.spec_id = #{config.specId}
+                    </if>
+                    <if test="config.specId == null">
+                        AND sc.spec_id IS NULL
+                    </if>
+                    <if test="config.supplierId != null">
+                        AND sc.supplier_id = #{config.supplierId}
+                    </if>
+                    <if test="config.supplierId == null">
+                        AND sc.supplier_id IS NULL
+                    </if>
+                    <if test="config.orgId != null">
+                        AND sc.org_id = #{config.orgId}
+                    </if>
+                    <if test="config.orgId == null">
+                        AND sc.org_id IS NULL
+                    </if>
+                )
+            </foreach>
+            )
+        GROUP BY 
+            sc.card_type_id, sc.spec_id, sc.supplier_id, sc.org_id
+    </select>
+    
+</mapper>

@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "HLR/交换机管理接口测试用例",
+    "description": "HlrSwitchController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询HLR/交换机",
+      "method": "GET",
+      "url": "/msisdn/hlrSwitch/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "hlrName": "北京HLR01",
+        "hlrCode": "BJ_HLR_01",
+        "regionId": 1,
+        "hlrType": "HLR",
+        "status": 1
+      },
+      "description": "分页查询HLR/交换机列表，支持多条件筛选"
+    },
+    {
+      "name": "获取HLR/交换机详情",
+      "method": "GET",
+      "url": "/msisdn/hlrSwitch/1",
+      "description": "根据HLR/交换机ID获取详细信息"
+    },
+    {
+      "name": "新增HLR/交换机",
+      "method": "POST",
+      "url": "/msisdn/hlrSwitch/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "hlrCode": "SH_HLR_01",
+        "hlrName": "上海HLR01",
+        "hlrType": "HLR",
+        "regionId": 2,
+        "ipAddress": "192.168.1.100",
+        "port": 8080,
+        "capacity": 1000000,
+        "currentLoad": 0,
+        "status": 1,
+        "remark": "上海地区主要HLR设备"
+      },
+      "description": "新增一个HLR/交换机设备"
+    },
+    {
+      "name": "修改HLR/交换机",
+      "method": "PUT",
+      "url": "/msisdn/hlrSwitch/update",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "hlrId": 1,
+        "hlrCode": "BJ_HLR_01",
+        "hlrName": "北京HLR01(更新)",
+        "hlrType": "HLR",
+        "regionId": 1,
+        "ipAddress": "192.168.1.101",
+        "port": 8081,
+        "capacity": 1200000,
+        "currentLoad": 500000,
+        "status": 1,
+        "remark": "更新后的北京HLR设备"
+      },
+      "description": "修改HLR/交换机信息"
+    },
+    {
+      "name": "删除HLR/交换机",
+      "method": "DELETE",
+      "url": "/msisdn/hlrSwitch/1",
+      "description": "删除指定ID的HLR/交换机"
+    },
+    {
+      "name": "启用HLR/交换机",
+      "method": "PUT",
+      "url": "/msisdn/hlrSwitch/enable/1",
+      "description": "启用指定的HLR/交换机"
+    },
+    {
+      "name": "禁用HLR/交换机",
+      "method": "PUT",
+      "url": "/msisdn/hlrSwitch/disable/1",
+      "description": "禁用指定的HLR/交换机"
+    },
+    {
+      "name": "根据区域ID获取HLR/交换机列表",
+      "method": "GET",
+      "url": "/msisdn/hlrSwitch/listByRegionId/1",
+      "description": "根据区域ID获取该区域下的所有HLR/交换机"
+    },
+    {
+      "name": "根据类型获取HLR/交换机列表",
+      "method": "GET",
+      "url": "/msisdn/hlrSwitch/listByType/HLR",
+      "description": "根据设备类型获取HLR/交换机列表"
+    }
+  ]
+}

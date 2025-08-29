@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    .aii-table > .toolbar {
+        @apply flex items-center justify-end gap-10 mb-10;
+    }
+    .aii-table > .footer {
+        @apply mt-10 flex items-center justify-between;
+    }
+    .aii-table > .footer > .pagination {
+        @apply flex items-center;
+    }
+    .batch-operation-th {
+        @apply h-64 grid items-center bg-light-colorPrimaryBg dark:bg-dark-colorPrimaryBg;
+    }
+    .ant-table-thead > .batch-operation-tr > th {
+        @apply !bg-white dark:!bg-dark-colorBgContainer;
+    }
+}

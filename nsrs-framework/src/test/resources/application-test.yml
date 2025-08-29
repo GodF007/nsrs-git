@@ -1,0 +1,17 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 10000
+    jedis:
+      pool:
+        max-active: 20
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+logging:
+  level:
+    com.nsrs.framework.lock.aspect: DEBUG

@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "号码段管理接口测试用例",
+    "description": "NumberSegmentController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询号码段",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "segmentCode": "138",
+        "segmentType": 1,
+        "regionId": 1,
+        "hlrSwitchId": 1,
+        "status": 1
+      },
+      "description": "分页查询号码段列表，支持多条件筛选"
+    },
+    {
+      "name": "获取号码段详情",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/1",
+      "description": "根据号码段ID获取详细信息"
+    },
+    {
+      "name": "根据号码段代码获取号码段",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/getByCode/138",
+      "description": "根据号码段代码获取号码段信息"
+    },
+    {
+      "name": "新增号码段",
+      "method": "POST",
+      "url": "/msisdn/numberSegment/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "segmentCode": "139",
+        "segmentName": "139号码段",
+        "segmentType": 1,
+        "regionId": 1,
+        "hlrSwitchId": 1,
+        "startNumber": "13900000000",
+        "endNumber": "13999999999",
+        "totalCount": 100000000,
+        "usedCount": 0,
+        "availableCount": 100000000,
+        "status": 1,
+        "remark": "新增139号码段"
+      },
+      "description": "新增一个号码段"
+    },
+    {
+      "name": "修改号码段",
+      "method": "PUT",
+      "url": "/msisdn/numberSegment/update",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "segmentId": 1,
+        "segmentCode": "138",
+        "segmentName": "138号码段(更新)",
+        "segmentType": 1,
+        "regionId": 1,
+        "hlrSwitchId": 1,
+        "startNumber": "13800000000",
+        "endNumber": "13899999999",
+        "totalCount": 100000000,
+        "usedCount": 1000,
+        "availableCount": 99999000,
+        "status": 1,
+        "remark": "更新138号码段信息"
+      },
+      "description": "修改号码段信息"
+    },
+    {
+      "name": "删除号码段",
+      "method": "DELETE",
+      "url": "/msisdn/numberSegment/1",
+      "description": "删除指定ID的号码段"
+    },
+    {
+      "name": "启用号码段",
+      "method": "PUT",
+      "url": "/msisdn/numberSegment/enable/1",
+      "description": "启用指定号码段"
+    },
+    {
+      "name": "禁用号码段",
+      "method": "PUT",
+      "url": "/msisdn/numberSegment/disable/1",
+      "description": "禁用指定号码段"
+    },
+    {
+      "name": "根据类型获取号码段列表",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/listByType/1",
+      "description": "根据号码段类型获取号码段列表"
+    },
+    {
+      "name": "根据区域ID获取号码段列表",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/listByRegionId/1",
+      "description": "根据区域ID获取该区域的号码段列表"
+    },
+    {
+      "name": "根据HLR/交换机ID获取号码段列表",
+      "method": "GET",
+      "url": "/msisdn/numberSegment/listByHlrSwitchId/1",
+      "description": "根据HLR/交换机ID获取号码段列表"
+    },
+    {
+      "name": "更新号码段的号码数量统计",
+      "method": "PUT",
+      "url": "/msisdn/numberSegment/updateNumberCount/1",
+      "description": "重新统计并更新号码段的号码数量信息"
+    }
+  ]
+}

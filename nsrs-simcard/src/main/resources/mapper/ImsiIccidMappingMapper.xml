@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.simcard.mapper.ImsiIccidMappingMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.nsrs.simcard.entity.ImsiIccidMapping">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="imsi" property="imsi" jdbcType="VARCHAR"/>
+        <result column="iccid" property="iccid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, imsi, iccid
+    </sql>
+
+    <!-- 根据IMSI查询ICCID -->
+    <select id="getIccidByImsi" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT iccid
+        FROM imsi_iccid_mapping
+        WHERE imsi = #{imsi}
+    </select>
+
+    <!-- 批量插入IMSI-ICCID映射关系 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO imsi_iccid_mapping (imsi, iccid)
+        VALUES
+        <foreach collection="mappings" item="mapping" separator=",">
+            (
+                #{mapping.imsi},
+                #{mapping.iccid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据IMSI删除映射关系 -->
+    <delete id="deleteByImsi" parameterType="java.lang.String">
+        DELETE FROM imsi_iccid_mapping
+        WHERE imsi = #{imsi}
+    </delete>
+
+    <!-- 批量根据IMSI删除映射关系 -->
+    <delete id="batchDeleteByImsi" parameterType="java.util.List">
+        DELETE FROM imsi_iccid_mapping
+        WHERE imsi IN
+        <foreach collection="imsiList" item="imsi" open="(" separator="," close=")">
+            #{imsi}
+        </foreach>
+    </delete>
+
+    <!-- 更新IMSI-ICCID映射关系 -->
+    <update id="updateMapping">
+        UPDATE imsi_iccid_mapping
+        SET iccid = #{iccid}
+        WHERE imsi = #{imsi}
+    </update>
+
+</mapper>

@@ -1,0 +1,41 @@
+/*! scopecss-disable */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background-light: #f9f9f9;
+    --background-dark: #121212;
+    --text-light: #000000e0;
+    --text-dark: #ffffffd9;
+
+    margin: 0;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-size: 14px;
+
+    color-scheme: light dark;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    width: 100vw;
+}
+
+body,
+.fullscreen.fullscreen-enabled {
+    background-color: var(--background-light);
+    color: var(--text-light);
+}
+
+.dark body,
+.dark .fullscreen.fullscreen-enabled {
+    background-color: var(--background-dark);
+    color: var(--text-dark);
+}
+/*! scopecss-enable */

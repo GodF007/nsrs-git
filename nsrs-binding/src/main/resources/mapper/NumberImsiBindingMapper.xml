@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.binding.mapper.NumberImsiBindingMapper">
+
+    <!-- 自定义分页查询 -->
+    <select id="selectPageWithParams" resultType="com.nsrs.binding.entity.NumberImsiBinding">
+        SELECT *
+        FROM ${tableName}
+        <where>
+            <if test="params.number != null and params.number != ''">
+                AND number LIKE CONCAT('%', #{params.number}, '%')
+            </if>
+            <if test="params.imsi != null and params.imsi != ''">
+                AND imsi LIKE CONCAT('%', #{params.imsi}, '%')
+            </if>
+            <if test="params.bindingStatus != null">
+                AND binding_status = #{params.bindingStatus}
+            </if>
+            <if test="params.bindingType != null">
+                AND binding_type = #{params.bindingType}
+            </if>
+            <if test="params.startTime != null">
+                AND binding_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null">
+                AND binding_time &lt;= #{params.endTime}
+            </if>
+        </where>
+        ORDER BY binding_time DESC
+    </select>
+    
+    <!-- 根据号码查询绑定关系 -->
+    <select id="selectByNumber" resultType="com.nsrs.binding.entity.NumberImsiBinding">
+        SELECT *
+        FROM ${tableName}
+        WHERE number = #{number}
+        AND binding_status = 1
+        LIMIT 1
+    </select>
+    
+    <!-- 根据IMSI查询绑定关系 -->
+    <select id="selectByImsi" resultType="com.nsrs.binding.entity.NumberImsiBinding">
+        SELECT *
+        FROM ${tableName}
+        WHERE imsi = #{imsi}
+        AND binding_status = 1
+        LIMIT 1
+    </select>
+    
+    <!-- 根据号码和IMSI查询绑定关系 -->
+    <select id="selectByNumberAndImsi" resultType="com.nsrs.binding.entity.NumberImsiBinding">
+        SELECT *
+        FROM ${tableName}
+        WHERE number = #{number}
+        AND imsi = #{imsi}
+        AND binding_status = 1
+        LIMIT 1
+    </select>
+    
+    <!-- 批量插入绑定关系 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO ${tableName}
+        (binding_id, number_id, number, imsi_id, imsi, order_id, iccid, binding_type, binding_status, binding_time, operator_user_id, remark, create_time, update_time, create_user_id, update_user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.bindingId}, #{item.numberId}, #{item.number}, #{item.imsiId}, #{item.imsi}, #{item.orderId}, #{item.iccid},
+            #{item.bindingType}, #{item.bindingStatus}, #{item.bindingTime}, #{item.operatorUserId}, #{item.remark},
+            #{item.createTime}, #{item.updateTime}, #{item.createUserId}, #{item.updateUserId}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 批量更新绑定状态为已解绑 -->
+    <update id="batchUpdateStatus">
+        UPDATE ${tableName}
+        SET binding_status = 2,
+            unbind_time = NOW(),
+            update_time = NOW(),
+            update_user_id = #{operatorUserId},
+            remark = #{remark}
+        WHERE binding_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND binding_status = 1
+    </update>
+    
+    <!-- 统计各状态的绑定数量 -->
+    <select id="countByStatus" resultType="java.util.Map">
+        SELECT binding_status as status, COUNT(1) as count
+        FROM ${tableName}
+        <where>
+            <if test="params.startTime != null">
+                AND binding_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null">
+                AND binding_time &lt;= #{params.endTime}
+            </if>
+            <if test="params.bindingType != null">
+                AND binding_type = #{params.bindingType}
+            </if>
+        </where>
+        GROUP BY binding_status
+    </select>
+    
+    <!-- 根据订单ID查询绑定关系 -->
+    <select id="selectByOrderId" resultType="com.nsrs.binding.entity.NumberImsiBinding">
+        SELECT *
+        FROM ${tableName}
+        WHERE order_id = #{orderId}
+        ORDER BY create_time DESC
+    </select>
+    
+    <!-- 根据前缀获取表名 -->
+    <select id="getTableNameByNumber" resultType="java.lang.String">
+        SELECT CONCAT('number_imsi_binding_', SUBSTRING(#{number}, 1, 3))
+    </select>
+</mapper>

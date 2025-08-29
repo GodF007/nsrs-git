@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: nsrs
+  labels:
+    app: mysql
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+    name: mysql
+  selector:
+    app: mysql
+
+---
+# 如果需要从集群外部访问 MySQL（仅用于调试，生产环境不建议）
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-external
+  namespace: nsrs
+  labels:
+    app: mysql
+    component: database
+  annotations:
+    service.beta.kubernetes.io/external-traffic: OnlyLocal
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+    name: mysql
+    # nodePort: 30306  # 可以指定特定端口，或让 K8s 自动分配
+  selector:
+    app: mysql

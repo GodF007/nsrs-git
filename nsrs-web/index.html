@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>%VITE_TITLE%</title>
+        <style>
+            .loader {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: fit-content;
+                font-weight: bold;
+                font-family: monospace;
+                white-space: pre;
+                font-size: 30px;
+                line-height: 1.2em;
+                height: 1.2em;
+                overflow: hidden;
+                color: #697eff;
+            }
+            .loader:before {
+                content: 'Loading...\A⌰oading...\A⌰⍜ading...\A⌰⍜⏃ding...\A⌰⍜⏃⎅ing...\A⌰⍜⏃⎅⟟ng...\A⌰⍜⏃⎅⟟⋏g...\A⌰⍜⏃⎅⟟⋏☌...\A⌰⍜⏃⎅⟟⋏☌⟒..\A⌰⍜⏃⎅⟟⋏☌⟒⏁.\A⌰⍜⏃⎅⟟⋏☌⟒⏁⋔';
+                white-space: pre;
+                display: inline-block;
+                animation: l39 1s infinite steps(11) alternate;
+            }
+
+            @keyframes l39 {
+                100% {
+                    transform: translateY(-100%);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+            <div class="loader"></div>
+        </div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
+</html>

@@ -1,0 +1,429 @@
+import { useEffect, useState } from 'react'
+
+import { useTranslation } from 'react-i18next'
+import { Col, Form, Input, Modal, Row, Select } from 'antd'
+import type { FormInstance, SelectProps, TableColumnsType } from 'antd'
+
+import { client } from '@/utils/fetch'
+import useTable from '@/hooks/table.hooks'
+import { formatDate } from '@/utils/common'
+import AiiTable from '@/components/AiiTable'
+import AiiSearch from '@/components/AiiSearch'
+import { useModal } from '@/hooks/modal.hooks'
+import type { components } from '@/interface/api'
+import { createFileRoute } from '@tanstack/react-router'
+import { CheckOne, Forbid, Newlybuild } from '@icon-park/react'
+
+export const Route = createFileRoute('/_authentication/number/hlr')({
+    component: RouteComponent,
+    staticData: {
+        code: 'Number_Hlr',
+        langCode: 'Menu.Number_hlr',
+    },
+})
+
+const modalTypeEnums: string[] = ['hlrSwitch']
+
+const HlrForm = (props: {
+    form: FormInstance
+    operation: 'create' | 'update' | 'detail'
+    switchTypeEnums: SelectProps['options']
+    regionEnums: SelectProps['options']
+}) => {
+    const { t } = useTranslation()
+
+    return (
+        <Form
+            form={props.form}
+            layout="vertical"
+            initialValues={{ needApproval: 0 }}
+            disabled={props.operation === 'detail'}
+        >
+            <Row gutter={16}>
+                <Form.Item name="hlrId" hidden>
+                    <Input />
+                </Form.Item>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.Hlr_Switch_Name')}
+                        name="hlrName"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Input placeholder={t('Common.Please_Input')} allowClear />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.Hlr_Switch_Code')}
+                        name="hlrCode"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Input placeholder={t('Common.Please_Input')} allowClear />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.Hlr_Switch_Type')}
+                        name="hlrType"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Select placeholder={t('Common.Please_Input')} allowClear options={props.switchTypeEnums} />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.IP_Address')}
+                        name="ipAddress"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Input placeholder={t('Common.Please_Input')} allowClear />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.Port')}
+                        name="port"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Input placeholder={t('Common.Please_Input')} allowClear />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={t('Number_Resource.Region')}
+                        name="regionId"
+                        rules={[{ required: true, message: t('Common.Required') }]}
+                    >
+                        <Select
+                            placeholder={t('Common.Please_Input')}
+                            showSearch
+                            optionFilterProp="label"
+                            allowClear
+                            options={props.regionEnums}
+                        />
+                    </Form.Item>
+                </Col>
+            </Row>
+        </Form>
+    )
+}
+
+function RouteComponent() {
+    const { t } = useTranslation()
+    const statusEnums = [
+        {
+            label: t('Enum.Enabled'),
+            value: 1,
+        },
+        {
+            label: t('Enum.Disabled'),
+            value: 0,
+        },
+    ]
+    const switchTypeEnums = [
+        {
+            label: t('Enum.HLR'),
+            value: 1,
+        },
+        {
+            label: t('Enum.Switch'),
+            value: 2,
+        },
+        {
+            label: t('Enum.Service_Platform'),
+            value: 3,
+        },
+    ]
+
+    const { queryTableData, dataSource, loading, onPageChange, onPageSizeChange, pagination, onSearch } =
+        useTable<components['schemas']['HlrSwitch']>('/msisdn/hlrSwitch/page')
+
+    const [regionEnums, setRegionEnums] = useState<SelectProps['options']>([])
+
+    const searchItems = [
+        <Form.Item name="hlrName">
+            <Input placeholder={t('Number_Resource.Hlr_Switch_Name')} allowClear />
+        </Form.Item>,
+        <Form.Item name="hlrType">
+            <Select placeholder={t('Number_Resource.Hlr_Switch_Type')} allowClear options={switchTypeEnums} />
+        </Form.Item>,
+        <Form.Item name="status">
+            <Select placeholder={t('Common.Status')} allowClear options={statusEnums} />
+        </Form.Item>,
+    ]
+
+    const columns: TableColumnsType<components['schemas']['HlrSwitch']> = [
+        {
+            title: t('Number_Resource.Hlr_Switch_Name'),
+            dataIndex: 'hlrName',
+            key: 'hlrName',
+            fixed: 'left',
+            minWidth: 160,
+        },
+        {
+            title: t('Number_Resource.Hlr_Switch_Type'),
+            dataIndex: 'hlrType',
+            key: 'hlrType',
+            render: (hlrType) => {
+                return switchTypeEnums.find((item) => item.value === hlrType)?.label
+            },
+            minWidth: 160,
+        },
+        {
+            title: t('Number_Resource.IP_Address'),
+            dataIndex: 'ipAddress',
+            key: 'ipAddress',
+            minWidth: 160,
+        },
+        {
+            title: t('Number_Resource.Port'),
+            dataIndex: 'port',
+            key: 'port',
+            minWidth: 160,
+        },
+
+        {
+            title: t('Number_Resource.Region'),
+            dataIndex: 'regionId',
+            key: 'regionId',
+            render: (regionId) => {
+                return regionEnums?.find((item) => item.value === regionId)?.label
+            },
+            minWidth: 160,
+        },
+        {
+            title: t('Common.Status'),
+            dataIndex: 'status',
+            key: 'status',
+            render: (status) => {
+                return statusEnums.find((item) => item.value === status)?.label
+            },
+            minWidth: 160,
+        },
+        {
+            title: t('Common.Create_Time'),
+            dataIndex: 'createTime',
+            key: 'createTime',
+            minWidth: 160,
+            render: (createTime) => {
+                return formatDate(createTime)
+            },
+        },
+    ]
+
+    const modal = useModal(modalTypeEnums)
+    const [regionForm] = Form.useForm()
+
+    const toolbar = [
+        {
+            icon: <Newlybuild />,
+            label: t('Action.Create'),
+            onClick: () => {
+                modal.hlrSwitch.openModal({
+                    title: t('Action.Create'),
+                    content: (
+                        <HlrForm
+                            form={regionForm}
+                            operation="create"
+                            switchTypeEnums={switchTypeEnums}
+                            regionEnums={regionEnums}
+                        />
+                    ),
+                    onOk: () => {
+                        regionForm.validateFields().then(async (values) => {
+                            const { data } = await client.POST('/msisdn/hlrSwitch/add', {
+                                body: values,
+                            })
+                            if (data?.success) {
+                                window.$message.success(t('Message.Create_Success'))
+                                onSearch()
+                                regionForm.resetFields()
+                                modal.hlrSwitch.closeModal()
+                            }
+                        })
+                    },
+                    onCancel: () => {
+                        regionForm.resetFields()
+                        modal.hlrSwitch.closeModal()
+                    },
+                })
+            },
+        },
+    ]
+
+    const onOperationClick = (key: string, record: any) => {
+        switch (key) {
+            case 'EDIT':
+                regionForm.setFieldsValue(record)
+                modal.hlrSwitch.openModal({
+                    title: t('Action.Edit'),
+                    content: (
+                        <HlrForm
+                            form={regionForm}
+                            operation="update"
+                            switchTypeEnums={switchTypeEnums}
+                            regionEnums={regionEnums}
+                        />
+                    ),
+                    onOk: () => {
+                        regionForm.validateFields().then(async (values) => {
+                            const { data } = await client.PUT('/msisdn/hlrSwitch/update', {
+                                body: values,
+                            })
+                            if (data?.success) {
+                                window.$message.success(t('Message.Update_Success'))
+                                onSearch()
+                                regionForm.resetFields()
+                                modal.hlrSwitch.closeModal()
+                            }
+                        })
+                    },
+                    onCancel: () => {
+                        regionForm.resetFields()
+                        modal.hlrSwitch.closeModal()
+                    },
+                })
+                break
+            case 'DETAIL':
+                regionForm.setFieldsValue(record)
+                modal.hlrSwitch.openModal({
+                    title: t('Action.Detail'),
+                    content: (
+                        <HlrForm
+                            form={regionForm}
+                            operation="detail"
+                            switchTypeEnums={switchTypeEnums}
+                            regionEnums={regionEnums}
+                        />
+                    ),
+                    onOk: () => {
+                        regionForm.resetFields()
+                        modal.hlrSwitch.closeModal()
+                    },
+                    onCancel: () => {
+                        regionForm.resetFields()
+                        modal.hlrSwitch.closeModal()
+                    },
+                })
+                break
+            case 'DELETE':
+                window.$modal.confirm({
+                    title: t('Common.Tips'),
+                    content: t('Tips.Delete_Tips'),
+                    onOk: async () => {
+                        const { data } = await client.DELETE('/msisdn/hlrSwitch/{hlrId}', {
+                            params: {
+                                path: {
+                                    hlrId: record.hlrId,
+                                },
+                            },
+                        })
+                        if (data?.success) {
+                            window.$message.success(t('Message.Delete_Success'))
+                            onSearch()
+                        }
+                    },
+                })
+                break
+            case 'ENABLE':
+                window.$modal.confirm({
+                    title: t('Common.Tips'),
+                    content: t('Tips.Enable_Tips'),
+                    onOk: async () => {
+                        const { data } = await client.PUT('/msisdn/hlrSwitch/enable/{hlrId}', {
+                            params: {
+                                path: {
+                                    hlrId: record.hlrId,
+                                },
+                            },
+                        })
+                        if (data?.success) {
+                            window.$message.success(t('Message.Update_Success'))
+                            onSearch()
+                        }
+                    },
+                })
+                break
+            case 'DISABLE':
+                window.$modal.confirm({
+                    title: t('Common.Tips'),
+                    content: t('Tips.Disable_Tips'),
+                    onOk: async () => {
+                        const { data } = await client.PUT('/msisdn/hlrSwitch/disable/{hlrId}', {
+                            params: {
+                                path: {
+                                    hlrId: record.hlrId,
+                                },
+                            },
+                        })
+                        if (data?.success) {
+                            window.$message.success(t('Message.Update_Success'))
+                            onSearch()
+                        }
+                    },
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    const queryRegionEnums = async () => {
+        const { data } = await client.GET('/msisdn/region/listAllEnabled')
+        if (data?.success) {
+            setRegionEnums(
+                data.data?.map((item) => ({
+                    label: item.regionName,
+                    value: item.regionId,
+                })) ?? [],
+            )
+        }
+    }
+
+    useEffect(() => {
+        queryRegionEnums()
+        queryTableData()
+    }, [])
+
+    return (
+        <div>
+            <AiiSearch items={searchItems} onSearch={onSearch} />
+            <div className="wrapper">
+                <AiiTable
+                    rowKey="hlrId"
+                    loading={loading}
+                    columns={columns}
+                    dataSource={dataSource}
+                    pagination={pagination}
+                    toolbar={toolbar}
+                    operations={(record) => [
+                        'EDIT',
+                        'DETAIL',
+                        record.status === 0
+                            ? {
+                                  key: 'ENABLE',
+                                  label: t('Action.Enable'),
+                                  icon: <CheckOne />,
+                              }
+                            : {
+                                  key: 'DISABLE',
+                                  label: t('Action.Disable'),
+                                  danger: true,
+                                  icon: <Forbid />,
+                              },
+                        'DELETE',
+                    ]}
+                    onPageSizeChange={onPageSizeChange}
+                    onPageChange={onPageChange}
+                    onOperationClick={onOperationClick}
+                />
+            </div>
+            {modalTypeEnums?.length &&
+                modalTypeEnums.map((type) => (
+                    <Modal key={type} open={modal[type].isOpen} {...modal[type].modalOptions}>
+                        {modal[type].modalOptions.content}
+                    </Modal>
+                ))}
+        </div>
+    )
+}

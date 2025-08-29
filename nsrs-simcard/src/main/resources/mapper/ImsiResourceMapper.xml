@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.simcard.mapper.ImsiResourceMapper">
+
+    <!-- 批量插入IMSI资源 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO imsi_resource (
+            imsi_id, imsi, imsi_type, group_id, supplier_id, password, bill_id, status, 
+            create_time, update_time, create_user_id, update_user_id
+        ) VALUES 
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.imsiId}, #{item.imsi}, #{item.imsiType}, #{item.groupId}, #{item.supplierId}, 
+                #{item.password}, #{item.billId}, #{item.status}, 
+                #{item.createTime}, #{item.updateTime}, #{item.createUserId}, #{item.updateUserId}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 根据IMSI列表批量查询资源 -->
+    <select id="selectByImsiList" resultType="com.nsrs.simcard.entity.ImsiResource">
+        SELECT * FROM imsi_resource 
+        WHERE imsi IN 
+        <foreach collection="imsiList" item="imsi" open="(" separator="," close=")">
+            #{imsi}
+        </foreach>
+    </select>
+    
+    <!-- 批量更新IMSI状态 -->
+    <update id="batchUpdateStatusByImsi">
+        UPDATE imsi_resource SET 
+            status = CASE imsi
+                <foreach collection="updateData" item="item">
+                    WHEN #{item.imsi} THEN #{item.status}
+                </foreach>
+            END,
+            update_time = CASE imsi
+                <foreach collection="updateData" item="item">
+                    WHEN #{item.imsi} THEN #{item.updateTime}
+                </foreach>
+            END
+        WHERE imsi IN 
+        <foreach collection="updateData" item="item" open="(" separator="," close=")">
+            #{item.imsi}
+        </foreach>
+    </update>
+
+</mapper>

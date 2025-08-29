@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+package com.nsrs.busacc.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.nsrs.busacc.grpc";
+option java_outer_classname = "BusaccServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+// ========== 绑定激活服务 ==========
+
+// 绑定激活请求
+message BindingActivationRequest {
+  string number = 1;              // 号码
+  string imsi = 2;                // IMSI号码
+  string iccid = 3;               // ICCID
+  int64 order_id = 4;             // 订单ID
+  int32 binding_type = 5;         // 绑定类型: 1-普通绑定，2-批量绑定，3-测试
+  int64 operator_user_id = 6;     // 操作用户ID
+  string remark = 7;              // 备注
+}
+
+// 绑定激活响应
+message BindingActivationResponse {
+  int64 binding_id = 1;                           // 绑定ID
+  string number = 2;                              // 号码
+  string imsi = 3;                                // IMSI号码
+  string iccid = 4;                               // ICCID
+  int32 binding_status = 5;                       // 绑定状态：1-已绑定，2-已解绑
+  google.protobuf.Timestamp binding_time = 6;     // 绑定时间
+  bool success = 7;                               // 操作结果
+  string message = 8;                             // 结果消息
+}
+
+// 解绑请求
+message UnbindRequest {
+  string number = 1;              // 号码
+  int64 operator_user_id = 2;     // 操作用户ID
+  string remark = 3;              // 备注
+}
+
+// 解绑响应
+message UnbindResponse {
+  bool success = 1;               // 操作结果
+  string message = 2;             // 结果消息
+}
+
+// ========== 号码选择服务 ==========
+
+// 号码选择请求
+message NumberSelectionRequest {
+  string number_prefix = 1;       // 号段前缀
+  int32 pool_size = 2;            // 返回的号码数量
+  int32 number_type = 3;          // 号码类型
+  repeated int32 status_filter = 4; // 号码状态过滤
+}
+
+// 号码信息
+message NumberInfo {
+  int64 number_id = 1;            // 号码ID
+  string number = 2;              // 号码
+  int32 number_type = 3;          // 号码类型：1-固话，2-手机，3-800，4-400，5-VOIP，6-物联网
+  int32 status = 4;               // 号码状态：1-空闲，2-预留，3-已分配，4-已激活，5-已使用，6-已冻结，7-已锁定
+  string charge = 5;              // 费用（使用字符串表示BigDecimal）
+  int64 segment_id = 6;           // 号码段ID
+  int64 level_id = 7;             // 号码级别ID
+}
+
+// 号码选择响应
+message NumberSelectionResponse {
+  bool success = 1;               // 是否成功
+  string message = 2;             // 响应消息
+  repeated NumberInfo numbers = 3; // 号码列表
+  int32 total_count = 4;          // 总数量
+  string number_prefix = 5;       // 查询的号段前缀
+}
+
+// ========== SIM卡选择服务 ==========
+
+// SIM卡选择请求
+message SimCardSelectionRequest {
+  string iccid_suffix = 1;        // ICCID后缀
+  int32 pool_size = 2;            // 返回的SIM卡数量
+  int32 data_type = 3;            // 卡类型：1-流量卡，2-语音卡，3-双模卡，4-物联网卡
+  repeated int32 status_filter = 4; // SIM卡状态过滤
+  int64 supplier_id = 5;          // 供应商ID过滤
+  int64 organization_id = 6;      // 组织ID过滤
+  int64 batch_id = 7;             // 批次ID过滤
+}
+
+// SIM卡信息
+message SimCardInfo {
+  int64 card_id = 1;                              // SIM卡ID
+  string iccid = 2;                               // ICCID
+  string imsi = 3;                                // IMSI
+  int32 data_type = 4;                            // 数据类型：1-流量卡，2-语音卡，3-双模卡，4-物联网卡
+  int32 status = 5;                               // SIM卡状态：1-已发布，2-已分配，3-已激活，4-已停用，5-已回收
+  int64 batch_id = 6;                             // 批次ID
+  int64 supplier_id = 7;                          // 供应商ID
+  int64 organization_id = 8;                      // 组织ID
+  google.protobuf.Timestamp create_time = 9;      // 创建时间
+  string remark = 10;                             // 备注
+}
+
+// SIM卡选择响应
+message SimCardSelectionResponse {
+  bool success = 1;               // 是否成功
+  string message = 2;             // 响应消息
+  repeated SimCardInfo sim_cards = 3; // SIM卡列表
+  int32 total_count = 4;          // 总数量
+  string iccid_suffix = 5;        // 查询的ICCID后缀
+}
+
+// ========== 服务定义 ==========
+
+// 绑定激活服务
+service BindingActivationService {
+  // 绑定激活号码和IMSI
+  rpc BindAndActivate(BindingActivationRequest) returns (BindingActivationResponse);
+  
+  // 根据号码解绑
+  rpc UnbindByNumber(UnbindRequest) returns (UnbindResponse);
+}
+
+// 号码选择服务
+service NumberSelectionService {
+  // 根据号段查询号码
+  rpc SelectByPrefix(NumberSelectionRequest) returns (NumberSelectionResponse);
+  
+  // 随机获取号码池
+  rpc GetRandomPool(NumberSelectionRequest) returns (NumberSelectionResponse);
+}
+
+// SIM卡选择服务
+service SimCardSelectionService {
+  // 选择SIM卡（统一接口）
+  rpc SelectSimCards(SimCardSelectionRequest) returns (SimCardSelectionResponse);
+  
+  // 随机获取SIM卡池
+  rpc GetRandomPool(SimCardSelectionRequest) returns (SimCardSelectionResponse);
+}

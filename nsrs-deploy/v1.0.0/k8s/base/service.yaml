@@ -1,0 +1,103 @@
+# NSRS 应用服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsrs-service
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: application
+  annotations:
+    service.beta.kubernetes.io/external-traffic: OnlyLocal
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: nsrs
+    component: application
+
+---
+# NodePort 服务（用于外部访问）
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsrs-nodeport
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: application
+    service-type: nodeport
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+    nodePort: 30080  # 可以通过 http://节点IP:30080 访问
+  selector:
+    app: nsrs
+    component: application
+
+---
+# LoadBalancer 服务（如果云环境支持）
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsrs-loadbalancer
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: application
+    service-type: loadbalancer
+  annotations:
+    # 云厂商特定的注解，根据实际情况修改
+    # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    # service.beta.kubernetes.io/azure-load-balancer-internal: "false"
+    # service.beta.kubernetes.io/alibaba-cloud-loadbalancer-spec: "slb.s1.small"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8080
+    protocol: TCP
+    name: https
+  selector:
+    app: nsrs
+    component: application
+  # 如果需要指定特定的外部 IP
+  # loadBalancerIP: "192.168.1.100"
+  # 如果需要限制访问来源
+  # loadBalancerSourceRanges:
+  # - "10.0.0.0/8"
+  # - "192.168.0.0/16"
+
+---
+# Headless 服务（用于服务发现）
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsrs-headless
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: application
+    service-type: headless
+spec:
+  clusterIP: None
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: nsrs
+    component: application

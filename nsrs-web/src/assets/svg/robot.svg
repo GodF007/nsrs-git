@@ -1,0 +1,67 @@
+<svg
+  width="150"
+  height="150"
+  viewBox="0 0 150 150"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="robot-icon"
+>
+  <!-- 外部圆圈 -->
+  <circle cx="75" cy="75" r="55" class="outer-circle"/>
+  <!-- 头部 -->
+  <path
+    d="M30 75C30 45 45 30 75 30C105 30 120 45 120 75C120 105 105 120 75 120C45 120 30 105 30 75Z"
+    class="head"
+  />
+  <!-- 眼睛 -->
+  <rect x="55" y="50" width="15" height="30" rx="5" class="eye left-eye" />
+  <rect x="80" y="50" width="15" height="30" rx="5" class="eye right-eye" />
+  <!-- 样式 -->
+  <style>
+    /* 默认颜色 */
+    :root {
+      --outer-circle-color: #e0e0e0; /* 浅灰色外圈 */
+      --foreground-color: #000000; /* 黑色前景 */
+      --eye-color: #ffffff; /* 白色眼睛 */
+    }
+    .outer-circle {
+      fill: var(--outer-circle-color);
+    }
+    .head {
+      fill: var(--foreground-color);
+    }
+    .eye {
+      fill: var(--eye-color);
+      animation: lookAround 3s infinite ease-in-out;
+    }
+    .left-eye {
+      animation-delay: 0s;
+    }
+    .right-eye {
+      animation-delay: 0s;
+    }
+    @keyframes lookAround {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(5px, 5px); }
+      50% { transform: translate(-5px, 5px); }
+      75% { transform: translate(-5px, -5px); }
+      100% { transform: translate(0, 0); }
+    }
+    /* 深色模式 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --outer-circle-color: #000000; /* 黑色外圈 */
+        --foreground-color: #ffffff; /* 白色前景 */
+        --eye-color: #000000; /* 黑色眼睛 */
+      }
+    }
+    /* 浅色模式 */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --outer-circle-color: #e0e0e0; /* 浅灰色外圈 */
+        --foreground-color: #000000; /* 黑色前景 */
+        --eye-color: #ffffff; /* 白色眼睛 */
+      }
+    }
+  </style>
+</svg>

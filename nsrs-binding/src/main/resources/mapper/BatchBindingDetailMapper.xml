@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nsrs.binding.mapper.BatchBindingDetailMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.nsrs.binding.entity.BatchBindingDetail">
+        <id column="detail_id" property="detailId" jdbcType="BIGINT"/>
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="number" property="number" jdbcType="VARCHAR"/>
+        <result column="imsi" property="imsi" jdbcType="VARCHAR"/>
+        <result column="iccid" property="iccid" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="error_msg" property="errorMsg" jdbcType="VARCHAR"/>
+        <result column="process_time" property="processTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_user_id" property="createUserId" jdbcType="BIGINT"/>
+        <result column="update_user_id" property="updateUserId" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!-- 基础字段列表 -->
+    <sql id="Base_Column_List">
+        detail_id, task_id, number, imsi, iccid, status, error_msg, process_time,
+        create_time, update_time, create_user_id, update_user_id
+    </sql>
+
+    <!-- 根据任务ID查询详情 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM batch_binding_detail
+        WHERE task_id = #{taskId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据任务ID统计各状态数量 -->
+    <select id="countStatusByTaskId" resultType="java.util.Map">
+        SELECT status, COUNT(1) as count
+        FROM batch_binding_detail
+        WHERE task_id = #{taskId}
+        GROUP BY status
+    </select>
+
+    <!-- 根据任务ID删除详情 -->
+    <delete id="deleteByTaskId">
+        DELETE FROM batch_binding_detail
+        WHERE task_id = #{taskId}
+    </delete>
+
+    <!-- 批量插入详情 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO batch_binding_detail
+        (task_id, number, imsi, status, create_time, update_time, create_user_id, update_user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.taskId}, #{item.number}, #{item.imsi}, #{item.status},
+            #{item.createTime}, #{item.updateTime}, #{item.createUserId}, #{item.updateUserId}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 更新详情状态 -->
+    <update id="updateStatus">
+        UPDATE batch_binding_detail
+        SET status = #{status},
+            error_msg = #{errorMsg},
+            process_time = NOW(),
+            update_time = NOW()
+        WHERE detail_id = #{detailId}
+    </update>
+
+    <!-- 批量更新状态 -->
+    <update id="batchUpdateStatus">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE batch_binding_detail
+            SET status = #{item.status},
+                error_msg = #{item.errorMsg},
+                process_time = #{item.processTime},
+                update_time = #{item.updateTime}
+            WHERE detail_id = #{item.detailId}
+        </foreach>
+    </update>
+
+</mapper>

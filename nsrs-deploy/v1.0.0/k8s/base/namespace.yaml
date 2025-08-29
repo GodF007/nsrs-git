@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nsrs
+  labels:
+    name: nsrs
+    app: nsrs
+    environment: production
+  annotations:
+    description: "NSRS (Number SIM Resource System) namespace"

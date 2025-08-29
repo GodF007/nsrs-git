@@ -1,0 +1,39 @@
+{
+  "name": "nsrs-document-converter",
+  "version": "1.0.0",
+  "description": "NSRS系统文档转换工具",
+  "main": "convert-all.js",
+  "scripts": {
+    "convert": "node convert-all.js",
+    "convert:word": "pandoc ../NSRS系统性能测试方案.md -o output/NSRS系统性能测试方案.docx",
+    "convert:pdf": "pandoc ../NSRS系统性能测试方案.md -o output/NSRS系统性能测试方案.pdf --pdf-engine=xelatex -V mainfont=SimSun",
+    "convert:html": "pandoc ../NSRS系统性能测试方案.md -o output/NSRS系统性能测试方案.html --standalone",
+    "install-tools": "npm install -g markdown-pdf md-to-pdf",
+    "setup": "npm run install-tools && mkdir -p output"
+  },
+  "keywords": [
+    "markdown",
+    "converter",
+    "pandoc",
+    "word",
+    "pdf",
+    "nsrs"
+  ],
+  "author": "NSRS Team",
+  "license": "MIT",
+  "devDependencies": {
+    "markdown-pdf": "^10.0.0",
+    "md-to-pdf": "^5.2.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "./"
+  },
+  "bugs": {
+    "url": "./issues"
+  },
+  "homepage": "./README.md"
+}

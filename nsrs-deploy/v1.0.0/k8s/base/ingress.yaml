@@ -1,0 +1,129 @@
+# NSRS Ingress 配置
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nsrs-ingress
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: ingress
+  annotations:
+    # Nginx Ingress Controller 注解
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    
+    # 会话亲和性
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "nsrs-session"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "86400"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "86400"
+    
+    # 代理配置
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    
+    # 健康检查
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
+    
+    # CORS 配置（如果需要）
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    
+    # 限流配置（可选）
+    # nginx.ingress.kubernetes.io/rate-limit: "100"
+    # nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  rules:
+  # 基于域名的路由
+  - host: nsrs.example.com  # 请修改为实际域名
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nsrs-service
+            port:
+              number: 8080
+  
+  # 基于 IP 的路由（如果没有域名）
+  - http:
+      paths:
+      - path: /nsrs
+        pathType: Prefix
+        backend:
+          service:
+            name: nsrs-service
+            port:
+              number: 8080
+      - path: /actuator
+        pathType: Prefix
+        backend:
+          service:
+            name: nsrs-service
+            port:
+              number: 8080
+  
+  # TLS 配置（如果有 SSL 证书）
+  # tls:
+  # - hosts:
+  #   - nsrs.example.com
+  #   secretName: nsrs-tls-secret
+
+---
+# HTTPS Ingress 配置（如果需要 SSL）
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nsrs-ingress-tls
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: ingress-tls
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # 自动获取 Let's Encrypt 证书（如果安装了 cert-manager）
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # 其他配置同上
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  tls:
+  - hosts:
+    - nsrs.example.com  # 请修改为实际域名
+    secretName: nsrs-tls-secret
+  rules:
+  - host: nsrs.example.com  # 请修改为实际域名
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nsrs-service
+            port:
+              number: 8080
+
+---
+# TLS Secret 示例（手动创建证书时使用）
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: nsrs-tls-secret
+#   namespace: nsrs
+# type: kubernetes.io/tls
+# data:
+#   tls.crt: LS0tLS1CRUdJTi... # base64 编码的证书
+#   tls.key: LS0tLS1CRUdJTi... # base64 编码的私钥

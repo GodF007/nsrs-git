@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "号码审批管理接口测试用例",
+    "description": "NumberApprovalController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询号码审批",
+      "method": "GET",
+      "url": "/msisdn/approval/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "number": "13888888888",
+        "approvalNo": "AP202401001",
+        "applicantName": "张三",
+        "levelId": 1,
+        "status": 1
+      },
+      "description": "分页查询号码审批记录，支持多条件筛选"
+    },
+    {
+      "name": "申请号码",
+      "method": "POST",
+      "url": "/msisdn/approval/apply",
+      "params": {
+        "numberId": 1,
+        "applicantId": 1001,
+        "applicantName": "张三",
+        "applyReason": "企业客户申请VIP号码",
+        "customerInfo": "北京某科技有限公司，注册资本1000万"
+      },
+      "description": "提交号码申请，创建审批流程"
+    },
+    {
+      "name": "审批通过",
+      "method": "PUT",
+      "url": "/msisdn/approval/1/approve",
+      "params": {
+        "approverId": 2001,
+        "approverName": "李四",
+        "approvalOpinion": "客户资质符合要求，同意分配该号码"
+      },
+      "description": "审批通过指定的号码申请"
+    },
+    {
+      "name": "审批拒绝",
+      "method": "PUT",
+      "url": "/msisdn/approval/1/reject",
+      "params": {
+        "approverId": 2001,
+        "approverName": "李四",
+        "approvalOpinion": "客户资质不符合VIP号码申请要求，建议申请普通号码"
+      },
+      "description": "审批拒绝指定的号码申请"
+    },
+    {
+      "name": "取消申请",
+      "method": "PUT",
+      "url": "/msisdn/approval/1/cancel",
+      "params": {
+        "cancelReason": "客户主动取消申请"
+      },
+      "description": "取消指定的号码申请"
+    },
+    {
+      "name": "获取审批详情",
+      "method": "GET",
+      "url": "/msisdn/approval/1",
+      "description": "根据审批ID获取审批详细信息"
+    },
+    {
+      "name": "根据审批编号获取详情",
+      "method": "GET",
+      "url": "/msisdn/approval/no/AP202401001",
+      "description": "根据审批编号获取审批详细信息"
+    }
+  ]
+}

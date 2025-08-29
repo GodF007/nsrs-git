@@ -1,0 +1,106 @@
+{
+  "info": {
+    "name": "号码级别管理接口测试用例",
+    "description": "NumberLevelController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询号码级别",
+      "method": "GET",
+      "url": "/msisdn/numberLevel/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "levelName": "普通号码",
+        "levelCode": "NORMAL",
+        "status": 1
+      },
+      "description": "分页查询号码级别列表，支持按名称、代码、状态筛选"
+    },
+    {
+      "name": "获取号码级别详情",
+      "method": "GET",
+      "url": "/msisdn/numberLevel/1",
+      "description": "根据级别ID获取号码级别详细信息"
+    },
+    {
+      "name": "根据级别代码获取号码级别",
+      "method": "GET",
+      "url": "/msisdn/numberLevel/getByCode/NORMAL",
+      "description": "根据级别代码获取号码级别信息"
+    },
+    {
+      "name": "新增号码级别",
+      "method": "POST",
+      "url": "/msisdn/numberLevel/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "levelCode": "VIP",
+        "levelName": "VIP号码",
+        "levelDesc": "VIP客户专用号码级别",
+        "levelOrder": 1,
+        "needApproval": 1,
+        "approvalLevel": 2,
+        "chargeStandard": 1000.00,
+        "status": 1,
+        "remark": "VIP级别号码，需要审批"
+      },
+      "description": "新增一个号码级别"
+    },
+    {
+      "name": "修改号码级别",
+      "method": "PUT",
+      "url": "/msisdn/numberLevel/update",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "levelId": 1,
+        "levelCode": "NORMAL",
+        "levelName": "普通号码(更新)",
+        "levelDesc": "普通客户使用的号码级别",
+        "levelOrder": 3,
+        "needApproval": 0,
+        "approvalLevel": 0,
+        "chargeStandard": 100.00,
+        "status": 1,
+        "remark": "更新后的普通级别号码"
+      },
+      "description": "修改号码级别信息"
+    },
+    {
+      "name": "删除号码级别",
+      "method": "DELETE",
+      "url": "/msisdn/numberLevel/1",
+      "description": "删除指定ID的号码级别"
+    },
+    {
+      "name": "启用号码级别",
+      "method": "PUT",
+      "url": "/msisdn/numberLevel/enable/1",
+      "description": "启用指定号码级别"
+    },
+    {
+      "name": "禁用号码级别",
+      "method": "PUT",
+      "url": "/msisdn/numberLevel/disable/1",
+      "description": "禁用指定号码级别"
+    },
+    {
+      "name": "获取所有启用的号码级别",
+      "method": "GET",
+      "url": "/msisdn/numberLevel/listAllEnabled",
+      "description": "获取所有状态为启用的号码级别列表"
+    },
+    {
+      "name": "获取需要审批的号码级别列表",
+      "method": "GET",
+      "url": "/msisdn/numberLevel/listNeedApproval",
+      "description": "获取所有需要审批的号码级别列表"
+    }
+  ]
+}

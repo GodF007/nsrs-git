@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    .aii-tab {
+        @apply w-full h-full rounded-borderRadiusLG bg-light-colorBgContainer dark:bg-dark-colorBgContainer dark:border dark:border-dark-colorBorder relative;
+    }
+    .aii-tab-nav {
+        @apply relative flex items-center gap-10 py-8 px-16;
+    }
+    .aii-tab-nav-item {
+        @apply flex items-center cursor-pointer z-10 h-38 px-16 py-8 rounded-borderRadiusLG relative bg-transparent transition-all duration-300 hover:text-light-colorPrimary dark:hover:text-dark-colorPrimary;
+    }
+    .aii-tab-nav-item-active {
+        @apply text-light-colorPrimary dark:text-dark-colorPrimary;
+    }
+    .aii-tab-nav-indicator {
+        @apply absolute z-0 top-0 h-38 rounded-borderRadiusLG bg-light-colorPrimaryBg dark:bg-dark-colorPrimaryBg;
+    }
+    .aii-tab-content {
+        @apply overflow-hidden h-full;
+    }
+}

@@ -1,0 +1,110 @@
+{
+  "info": {
+    "name": "区域管理接口测试用例",
+    "description": "RegionController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询区域",
+      "method": "GET",
+      "url": "/msisdn/region/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "regionName": "北京",
+        "regionCode": "110000",
+        "parentId": 0,
+        "status": 1
+      },
+      "description": "分页查询区域列表，支持按名称、代码、父级ID、状态筛选"
+    },
+    {
+      "name": "获取区域详情",
+      "method": "GET",
+      "url": "/msisdn/region/1",
+      "description": "根据区域ID获取区域详细信息"
+    },
+    {
+      "name": "根据区域代码获取区域",
+      "method": "GET",
+      "url": "/msisdn/region/getByCode/110000",
+      "description": "根据区域代码获取区域信息"
+    },
+    {
+      "name": "新增区域",
+      "method": "POST",
+      "url": "/msisdn/region/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "regionCode": "310000",
+        "regionName": "上海市",
+        "parentId": 0,
+        "regionLevel": 1,
+        "regionType": "MUNICIPALITY",
+        "longitude": 121.4737,
+        "latitude": 31.2304,
+        "status": 1,
+        "remark": "直辖市"
+      },
+      "description": "新增一个区域"
+    },
+    {
+      "name": "修改区域",
+      "method": "PUT",
+      "url": "/msisdn/region/update",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "regionId": 1,
+        "regionCode": "110000",
+        "regionName": "北京市(更新)",
+        "parentId": 0,
+        "regionLevel": 1,
+        "regionType": "MUNICIPALITY",
+        "longitude": 116.4074,
+        "latitude": 39.9042,
+        "status": 1,
+        "remark": "更新后的直辖市信息"
+      },
+      "description": "修改区域信息"
+    },
+    {
+      "name": "删除区域",
+      "method": "DELETE",
+      "url": "/msisdn/region/1",
+      "description": "删除指定ID的区域"
+    },
+    {
+      "name": "启用区域",
+      "method": "PUT",
+      "url": "/msisdn/region/enable/1",
+      "description": "启用指定区域"
+    },
+    {
+      "name": "禁用区域",
+      "method": "PUT",
+      "url": "/msisdn/region/disable/1",
+      "description": "禁用指定区域"
+    },
+    {
+      "name": "获取子区域列表",
+      "method": "GET",
+      "url": "/msisdn/region/listChildren/1",
+      "description": "获取指定区域的所有子区域列表"
+    },
+    {
+      "name": "获取区域树",
+      "method": "GET",
+      "url": "/msisdn/region/tree",
+      "params": {
+        "rootId": 0
+      },
+      "description": "获取区域树形结构，可指定根节点ID"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: nsrs
+  labels:
+    app: mysql
+    component: database
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # MySQL 不支持滚动更新，因为它是有状态的
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+        component: database
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nsrs-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          value: "nsrs"
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: nsrs-secret
+              key: DB_USERNAME
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nsrs-secret
+              key: DB_PASSWORD
+        - name: TZ
+          value: "Asia/Shanghai"
+        
+        # 资源限制
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # 存储挂载
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /etc/mysql/conf.d/my.cnf
+          subPath: my.cnf
+        - name: mysql-init
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
+        
+        # 健康检查
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$MYSQL_ROOT_PASSWORD
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          exec:
+            command:
+            - mysql
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$MYSQL_ROOT_PASSWORD
+            - -e
+            - "SELECT 1"
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      
+      # 存储卷定义
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+      - name: mysql-config
+        configMap:
+          name: mysql-config
+          items:
+          - key: my.cnf
+            path: my.cnf
+      - name: mysql-init
+        configMap:
+          name: mysql-config
+          items:
+          - key: init.sql
+            path: init.sql
+      
+      # 安全上下文
+      securityContext:
+        fsGroup: 999  # MySQL 用户组 ID

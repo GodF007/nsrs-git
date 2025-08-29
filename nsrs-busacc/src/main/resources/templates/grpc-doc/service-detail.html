@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'gRPC 服务详情 - ' + ${service?.name}">gRPC 服务详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+    <style>
+        .method-card {
+            border-left: 4px solid #28a745;
+            transition: all 0.2s;
+        }
+        .method-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .method-type {
+            font-size: 0.8em;
+            padding: 0.25rem 0.5rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .breadcrumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+        }
+        .breadcrumb-item a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+        .breadcrumb-item.active {
+            color: white;
+        }
+        .test-section {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+        }
+        .json-input {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部区域 -->
+    <div class="header-section">
+        <div class="container">
+            <!-- 面包屑导航 -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/busacc/grpc-doc}">
+                            <i class="fas fa-home me-1"></i>首页
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${service?.name}">服务详情</li>
+                </ol>
+            </nav>
+            
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-cogs me-3"></i>
+                        <span th:text="${service?.name}">Service Name</span>
+                    </h1>
+                    <p class="lead mb-0" th:text="${service?.fullName}">Full Service Name</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="badge bg-light text-dark fs-6">
+                        <i class="fas fa-code me-2"></i>
+                        <span th:text="${#lists.size(service?.methods)}">0</span> 个方法
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="container mt-4">
+        <!-- 服务信息 -->
+        <div class="row mb-4" th:if="${service == null}">
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    未找到指定的 gRPC 服务
+                </div>
+                <a th:href="@{/busacc/grpc-doc}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    返回服务列表
+                </a>
+            </div>
+        </div>
+
+        <!-- 方法列表 -->
+        <div class="row" th:if="${service != null}">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-list me-2"></i>
+                    方法列表
+                </h2>
+                
+                <!-- 如果没有方法 -->
+                <div th:if="${#lists.isEmpty(service.methods)}" class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    该服务暂无可用方法
+                </div>
+                
+                <!-- 方法卡片 -->
+                <div th:if="${!#lists.isEmpty(service.methods)}">
+                    <div class="card method-card mb-3" th:each="method : ${service.methods}">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title mb-2">
+                                        <i class="fas fa-function text-success me-2"></i>
+                                        <span th:text="${method.name.substring(method.name.lastIndexOf('/') + 1)}">Method Name</span>
+                                    </h5>
+                                    <p class="text-muted mb-2" th:text="${method.name}">Full Method Name</p>
+                                    <span class="badge method-type" 
+                                          th:classappend="${method.type == 'UNARY'} ? 'bg-primary' : (${method.type == 'SERVER_STREAMING'} ? 'bg-info' : (${method.type == 'CLIENT_STREAMING'} ? 'bg-warning' : 'bg-secondary'))"
+                                          th:text="${method.type}">UNARY</span>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-outline-primary btn-sm" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            th:data-bs-target="'#test-' + ${methodStat.index}" 
+                                            aria-expanded="false">
+                                        <i class="fas fa-play me-2"></i>
+                                        测试方法
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 测试区域 -->
+                            <div class="collapse mt-3" th:id="'test-' + ${methodStat.index}">
+                                <div class="test-section p-3">
+                                    <h6 class="mb-3">
+                                        <i class="fas fa-vial me-2"></i>
+                                        方法测试
+                                    </h6>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">请求参数 (JSON):</label>
+                                            <textarea class="form-control json-input" 
+                                                      rows="6" 
+                                                      placeholder='{
+  "field1": "value1",
+  "field2": "value2"
+}'></textarea>
+                                            <small class="form-text text-muted mt-1">
+                                                请输入符合 protobuf 消息格式的 JSON 数据
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">响应结果:</label>
+                                            <div class="border rounded p-3 bg-white" style="min-height: 150px;">
+                                                <div class="text-muted text-center mt-4">
+                                                    <i class="fas fa-play-circle fa-2x mb-2"></i>
+                                                    <p>点击"发送请求"按钮执行测试</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <button class="btn btn-success me-2" 
+                                                onclick="sendGrpcRequest(this)" 
+                                                th:data-method="${method.name}">
+                                            <i class="fas fa-paper-plane me-2"></i>
+                                            发送请求
+                                        </button>
+                                        <button class="btn btn-secondary" onclick="clearTestData(this)">
+                                            <i class="fas fa-eraser me-2"></i>
+                                            清空
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 返回按钮 -->
+        <div class="row mt-4" th:if="${service != null}">
+            <div class="col-12">
+                <a th:href="@{/busacc/grpc-doc}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    返回服务列表
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="mt-5 py-4 bg-light">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                <i class="fas fa-code me-2"></i>
+                gRPC 文档系统 - 服务详情页面
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        /**
+         * 发送 gRPC 请求
+         */
+        function sendGrpcRequest(button) {
+            const methodName = button.getAttribute('data-method');
+            const testSection = button.closest('.test-section');
+            const requestInput = testSection.querySelector('textarea');
+            const responseDiv = testSection.querySelector('.border.rounded');
+            
+            // 获取请求参数
+            let requestData;
+            try {
+                requestData = JSON.parse(requestInput.value || '{}');
+            } catch (e) {
+                showError(responseDiv, '请求参数格式错误: ' + e.message);
+                return;
+            }
+            
+            // 显示加载状态
+            showLoading(responseDiv);
+            
+            // 提取服务名和方法名
+            const serviceName = '[[${service.name}]]';
+            const simpleMethodName = methodName.split('/').pop();
+            
+            // 发送真实的 gRPC 请求
+            fetch(`/nsrs/busacc/api/grpc-doc/test/${serviceName}/${simpleMethodName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    request: JSON.stringify(requestData)
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showResponse(responseDiv, {
+                        success: true,
+                        executionTime: result.executionTime + 'ms',
+                        response: JSON.parse(result.responseData || '{}')
+                    });
+                } else {
+                    showError(responseDiv, result.errorMessage || '请求失败');
+                }
+            })
+            .catch(error => {
+                showError(responseDiv, '网络错误: ' + error.message);
+            });
+        }
+        
+        /**
+         * 清空测试数据
+         */
+        function clearTestData(button) {
+            const testSection = button.closest('.test-section');
+            const requestInput = testSection.querySelector('textarea');
+            const responseDiv = testSection.querySelector('.border.rounded');
+            
+            requestInput.value = '';
+            responseDiv.innerHTML = `
+                <div class="text-muted text-center mt-4">
+                    <i class="fas fa-play-circle fa-2x mb-2"></i>
+                    <p>点击"发送请求"按钮执行测试</p>
+                </div>
+            `;
+        }
+        
+        /**
+         * 显示加载状态
+         */
+        function showLoading(container) {
+            container.innerHTML = `
+                <div class="text-center mt-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">正在发送请求...</p>
+                </div>
+            `;
+        }
+        
+        /**
+         * 显示响应结果
+         */
+        function showResponse(container, response) {
+            container.innerHTML = `
+                <div class="mb-2">
+                    <span class="badge bg-success">响应成功</span>
+                </div>
+                <pre class="mb-0"><code class="language-json">${JSON.stringify(response, null, 2)}</code></pre>
+            `;
+            
+            // 高亮代码
+            if (window.Prism) {
+                Prism.highlightAllUnder(container);
+            }
+        }
+        
+        /**
+         * 显示错误信息
+         */
+        function showError(container, message) {
+            container.innerHTML = `
+                <div class="alert alert-danger mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

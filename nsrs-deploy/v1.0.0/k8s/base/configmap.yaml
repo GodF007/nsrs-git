@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nsrs-config
+  namespace: nsrs
+  labels:
+    app: nsrs
+data:
+  # Spring Boot 配置
+  SPRING_PROFILES_ACTIVE: "k8s"
+  
+  # 数据库配置
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+  DB_NAME: "nsrs"
+  
+  # 应用配置
+  SERVER_PORT: "8080"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: "always"
+  
+  # 日志配置
+  LOGGING_LEVEL_ROOT: "INFO"
+  LOGGING_LEVEL_COM_NSRS: "DEBUG"
+  LOGGING_PATTERN_CONSOLE: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  
+  # JPA 配置
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_JPA_SHOW_SQL: "false"
+  SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.MySQL8Dialect"
+  
+  # 连接池配置
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "20"
+  SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "5"
+  SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: "30000"
+  SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT: "600000"
+  SPRING_DATASOURCE_HIKARI_MAX_LIFETIME: "1800000"
+  
+  # 应用特定配置
+  NSRS_BATCH_SIZE: "1000"
+  NSRS_THREAD_POOL_SIZE: "10"
+  
+  # application-k8s.yml 配置文件
+  application-k8s.yml: |
+    server:
+      port: ${SERVER_PORT:8080}
+      servlet:
+        context-path: /
+    
+    spring:
+      application:
+        name: nsrs
+      
+      datasource:
+        url: jdbc:mysql://${DB_HOST:mysql-service}:${DB_PORT:3306}/${DB_NAME:nsrs}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        
+        hikari:
+          maximum-pool-size: ${SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE:20}
+          minimum-idle: ${SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE:5}
+          connection-timeout: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:30000}
+          idle-timeout: ${SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT:600000}
+          max-lifetime: ${SPRING_DATASOURCE_HIKARI_MAX_LIFETIME:1800000}
+          pool-name: NSRSHikariCP
+      
+      jpa:
+        hibernate:
+          ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+        show-sql: ${SPRING_JPA_SHOW_SQL:false}
+        properties:
+          hibernate:
+            format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL:true}
+            dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.MySQL8Dialect}
+    
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,metrics}
+      endpoint:
+        health:
+          show-details: ${MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+      health:
+        db:
+          enabled: true
+    
+    logging:
+      level:
+        root: ${LOGGING_LEVEL_ROOT:INFO}
+        com.nsrs: ${LOGGING_LEVEL_COM_NSRS:DEBUG}
+      pattern:
+        console: "${LOGGING_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n}"
+    
+    # NSRS 应用特定配置
+    nsrs:
+      batch:
+        size: ${NSRS_BATCH_SIZE:1000}
+      thread:
+        pool:
+          size: ${NSRS_THREAD_POOL_SIZE:10}

@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    .aii-chat {
+        @apply h-full relative;
+    }
+    .sender {
+        @apply w-full absolute bottom-0 left-0;
+    }
+    .code-block-wrapper {
+        @apply my-4 rounded-lg overflow-hidden bg-light-colorBgBase dark:bg-dark-colorBgBase;
+    }
+    .code-block-header {
+        @apply flex justify-between items-center px-12 py-6 bg-light-colorBgElevated dark:bg-dark-colorBgElevated border-b dark:border-dark-colorBorder;
+    }
+}
+
+.sender-content {
+    @apply !block overflow-auto !mb-40;
+}
+.sender-prefix {
+    @apply absolute bottom-12 left-16;
+}
+.sender-actions {
+    @apply absolute bottom-12 right-12 left-16 w-[calc(100%-28px)];
+}

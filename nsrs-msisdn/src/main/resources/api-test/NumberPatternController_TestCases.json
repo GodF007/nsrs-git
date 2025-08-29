@@ -1,0 +1,108 @@
+{
+  "info": {
+    "name": "号码模式管理接口测试用例",
+    "description": "NumberPatternController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询号码模式",
+      "method": "GET",
+      "url": "/msisdn/numberPattern/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "patternName": "靓号模式",
+        "levelId": 1,
+        "status": 1
+      },
+      "description": "分页查询号码模式列表，支持按模式名称、级别ID、状态筛选"
+    },
+    {
+      "name": "获取号码模式详情",
+      "method": "GET",
+      "url": "/msisdn/numberPattern/1",
+      "description": "根据模式ID获取号码模式详细信息"
+    },
+    {
+      "name": "新增号码模式",
+      "method": "POST",
+      "url": "/msisdn/numberPattern/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "patternName": "连号模式",
+        "patternDesc": "连续数字的号码模式",
+        "patternRule": "^1[3-9]\\d{1}(\\d)\\1{7}$",
+        "levelId": 1,
+        "patternType": 1,
+        "priority": 1,
+        "status": 1,
+        "remark": "连续数字号码模式，如13888888888"
+      },
+      "description": "新增一个号码模式"
+    },
+    {
+      "name": "修改号码模式",
+      "method": "PUT",
+      "url": "/msisdn/numberPattern/update",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "patternId": 1,
+        "patternName": "靓号模式(更新)",
+        "patternDesc": "更新后的靓号模式描述",
+        "patternRule": "^1[3-9]\\d{1}(\\d)\\1{7}$",
+        "levelId": 2,
+        "patternType": 1,
+        "priority": 2,
+        "status": 1,
+        "remark": "更新后的号码模式"
+      },
+      "description": "修改号码模式信息"
+    },
+    {
+      "name": "删除号码模式",
+      "method": "DELETE",
+      "url": "/msisdn/numberPattern/1",
+      "description": "删除指定ID的号码模式"
+    },
+    {
+      "name": "启用号码模式",
+      "method": "PUT",
+      "url": "/msisdn/numberPattern/enable/1",
+      "description": "启用指定号码模式"
+    },
+    {
+      "name": "禁用号码模式",
+      "method": "PUT",
+      "url": "/msisdn/numberPattern/disable/1",
+      "description": "禁用指定号码模式"
+    },
+    {
+      "name": "根据级别ID获取号码模式列表",
+      "method": "GET",
+      "url": "/msisdn/numberPattern/listByLevelId/1",
+      "description": "根据号码级别ID获取该级别下的所有号码模式"
+    },
+    {
+      "name": "获取所有启用的号码模式",
+      "method": "GET",
+      "url": "/msisdn/numberPattern/listAllEnabled",
+      "description": "获取所有状态为启用的号码模式列表"
+    },
+    {
+      "name": "验证号码是否符合指定的号码模式",
+      "method": "GET",
+      "url": "/msisdn/numberPattern/validateNumber",
+      "params": {
+        "number": "13888888888",
+        "patternId": 1
+      },
+      "description": "验证指定号码是否符合指定的号码模式规则"
+    }
+  ]
+}

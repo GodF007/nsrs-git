@@ -1,0 +1,135 @@
+# 水平自动扩缩容配置
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nsrs-hpa
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nsrs-app
+  
+  # 副本数量范围
+  minReplicas: 2
+  maxReplicas: 10
+  
+  # 扩缩容指标
+  metrics:
+  # CPU 使用率指标
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70  # CPU 使用率超过 70% 时扩容
+  
+  # 内存使用率指标
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80  # 内存使用率超过 80% 时扩容
+  
+  # 自定义指标（如果安装了 Prometheus Adapter）
+  # - type: Pods
+  #   pods:
+  #     metric:
+  #       name: http_requests_per_second
+  #     target:
+  #       type: AverageValue
+  #       averageValue: "100"  # 每秒请求数超过 100 时扩容
+  
+  # 扩缩容行为配置
+  behavior:
+    scaleUp:
+      # 扩容策略
+      stabilizationWindowSeconds: 60  # 扩容稳定窗口期
+      policies:
+      - type: Percent
+        value: 100  # 每次最多扩容 100%（翻倍）
+        periodSeconds: 60
+      - type: Pods
+        value: 2    # 每次最多增加 2 个 Pod
+        periodSeconds: 60
+      selectPolicy: Min  # 选择最小的扩容策略
+    
+    scaleDown:
+      # 缩容策略
+      stabilizationWindowSeconds: 300  # 缩容稳定窗口期（5分钟）
+      policies:
+      - type: Percent
+        value: 50   # 每次最多缩容 50%
+        periodSeconds: 60
+      - type: Pods
+        value: 1    # 每次最多减少 1 个 Pod
+        periodSeconds: 60
+      selectPolicy: Min  # 选择最小的缩容策略
+
+---
+# 垂直自动扩缩容配置（VPA）- 可选
+# 需要先安装 VPA Controller
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: nsrs-vpa
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nsrs-app
+  
+  # 更新策略
+  updatePolicy:
+    updateMode: "Auto"  # 自动更新资源请求
+    # updateMode: "Off"     # 仅推荐，不自动更新
+    # updateMode: "Initial" # 仅在 Pod 创建时更新
+  
+  # 资源策略
+  resourcePolicy:
+    containerPolicies:
+    - containerName: nsrs-app
+      # 资源范围限制
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 2000m
+        memory: 4Gi
+      # 控制哪些资源可以被 VPA 管理
+      controlledResources: ["cpu", "memory"]
+      # 控制 VPA 如何计算资源推荐值
+      controlledValues: RequestsAndLimits
+
+---
+# Pod 中断预算（PDB）- 确保高可用性
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nsrs-pdb
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: pdb
+spec:
+  # 最少保持运行的 Pod 数量
+  minAvailable: 1
+  # 或者使用百分比
+  # minAvailable: 50%
+  
+  # 最多可以中断的 Pod 数量
+  # maxUnavailable: 1
+  # maxUnavailable: 50%
+  
+  selector:
+    matchLabels:
+      app: nsrs
+      component: application

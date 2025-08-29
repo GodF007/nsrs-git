@@ -1,0 +1,203 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsrs-app
+  namespace: nsrs
+  labels:
+    app: nsrs
+    component: application
+    version: v1.0.0
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: nsrs
+      component: application
+  template:
+    metadata:
+      labels:
+        app: nsrs
+        component: application
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      # 如果使用私有镜像仓库，取消注释下面的行
+      # imagePullSecrets:
+      # - name: nsrs-registry-secret
+      
+      # 初始化容器 - 等待 MySQL 就绪
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for MySQL to be ready..."
+          until nc -z mysql-service 3306; do
+            echo "MySQL is not ready yet, waiting..."
+            sleep 5
+          done
+          echo "MySQL is ready!"
+      
+      containers:
+      - name: nsrs-app
+        image: nsrs:1.0.0  # 请根据实际情况修改镜像名称和标签
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        
+        # 环境变量
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: nsrs-config
+              key: SPRING_PROFILES_ACTIVE
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: nsrs-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: nsrs-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: nsrs-config
+              key: DB_NAME
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: nsrs-secret
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nsrs-secret
+              key: DB_PASSWORD
+        - name: SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: nsrs-config
+              key: SERVER_PORT
+        - name: TZ
+          value: "Asia/Shanghai"
+        - name: JAVA_OPTS
+          value: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
+        
+        # 资源限制
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        
+        # 存储挂载
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config/application-k8s.yml
+          subPath: application-k8s.yml
+        - name: logs-volume
+          mountPath: /app/logs
+        
+        # 健康检查
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        
+        # 启动探针
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+        
+        # 生命周期钩子
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sh
+              - -c
+              - "sleep 15"  # 优雅关闭
+      
+      # 存储卷定义
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nsrs-config
+          items:
+          - key: application-k8s.yml
+            path: application-k8s.yml
+      - name: logs-volume
+        emptyDir: {}
+      
+      # Pod 安全上下文
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      
+      # 调度配置
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - nsrs
+              topologyKey: kubernetes.io/hostname
+      
+      # 容忍度（如果需要）
+      # tolerations:
+      # - key: "node-role.kubernetes.io/master"
+      #   operator: "Exists"
+      #   effect: "NoSchedule"
+      
+      # 终止宽限期
+      terminationGracePeriodSeconds: 30

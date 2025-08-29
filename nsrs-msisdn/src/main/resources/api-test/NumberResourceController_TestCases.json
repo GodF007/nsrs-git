@@ -1,0 +1,243 @@
+{
+  "info": {
+    "name": "号码资源管理接口测试用例",
+    "description": "NumberResourceController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询号码资源",
+      "method": "GET",
+      "url": "/msisdn/number/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "number": "13800138000",
+        "numberType": 1,
+        "segmentId": 1,
+        "levelId": 1,
+        "patternId": 1,
+        "status": 1
+      },
+      "description": "查询号码资源列表，支持多条件筛选和分页"
+    },
+    {
+      "name": "跨表查询号码资源",
+      "method": "GET",
+      "url": "/msisdn/number/cross-table",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "number": "13800138000",
+        "numberType": 1,
+        "segmentId": 1,
+        "status": 1
+      },
+      "description": "跨表查询号码资源，用于大数据量场景"
+    },
+    {
+      "name": "根据号码查询资源",
+      "method": "GET",
+      "url": "/msisdn/number/13800138000",
+      "description": "根据具体号码查询号码资源详情"
+    },
+    {
+      "name": "新增号码资源",
+      "method": "POST",
+      "url": "/msisdn/number/add",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "number": "13800138001",
+        "numberType": 1,
+        "segmentId": 1,
+        "levelId": 1,
+        "patternId": 1,
+        "hlrId": 1,
+        "iccid": "89860000000000000001",
+        "status": 1,
+        "charge": 100.00,
+        "attributiveOrg": "测试组织",
+        "remark": "测试号码资源"
+      },
+      "description": "新增一个号码资源"
+    },
+    {
+      "name": "修改号码资源",
+      "method": "PUT",
+      "url": "/msisdn/number/update/13800138001",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "numberType": 1,
+        "segmentId": 1,
+        "levelId": 2,
+        "patternId": 1,
+        "hlrId": 1,
+        "iccid": "89860000000000000001",
+        "status": 1,
+        "charge": 150.00,
+        "attributiveOrg": "更新组织",
+        "remark": "更新后的号码资源"
+      },
+      "description": "修改指定号码的资源信息"
+    },
+    {
+      "name": "删除号码资源",
+      "method": "DELETE",
+      "url": "/msisdn/number/delete/13800138001",
+      "description": "删除指定号码的资源"
+    },
+    {
+      "name": "批量导入号码资源",
+      "method": "POST",
+      "url": "/msisdn/number/batch-import",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": [
+        {
+          "number": "13800138002",
+          "numberType": 1,
+          "segmentId": 1,
+          "levelId": 1,
+          "patternId": 1,
+          "hlrId": 1,
+          "status": 1,
+          "charge": 100.00,
+          "remark": "批量导入号码1"
+        },
+        {
+          "number": "13800138003",
+          "numberType": 1,
+          "segmentId": 1,
+          "levelId": 1,
+          "patternId": 1,
+          "hlrId": 1,
+          "status": 1,
+          "charge": 100.00,
+          "remark": "批量导入号码2"
+        }
+      ],
+      "description": "批量导入多个号码资源"
+    },
+    {
+      "name": "更新号码状态",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/status/2",
+      "description": "更新指定号码的状态"
+    },
+    {
+      "name": "创建号码分表",
+      "method": "POST",
+      "url": "/msisdn/number/table/138",
+      "description": "为指定前缀创建号码分表"
+    },
+    {
+      "name": "自动分类号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/classify",
+      "description": "对指定号码进行自动分类"
+    },
+    {
+      "name": "批量自动分类号码",
+      "method": "PUT",
+      "url": "/msisdn/number/segment/1/classify",
+      "description": "对指定号码段的所有号码进行批量自动分类"
+    },
+    {
+      "name": "预留号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/reserve",
+      "params": {
+        "remark": "预留给VIP客户"
+      },
+      "description": "预留指定号码"
+    },
+    {
+      "name": "分配号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/assign",
+      "params": {
+        "attributiveOrg": "北京分公司",
+        "remark": "分配给企业客户"
+      },
+      "description": "分配号码给指定组织"
+    },
+    {
+      "name": "激活号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/activate",
+      "params": {
+        "iccid": "89860000000000000001",
+        "remark": "号码激活"
+      },
+      "description": "激活指定号码"
+    },
+    {
+      "name": "冻结号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/freeze",
+      "params": {
+        "remark": "违规使用，临时冻结"
+      },
+      "description": "冻结指定号码"
+    },
+    {
+      "name": "解冻号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/unfreeze",
+      "params": {
+        "remark": "问题已解决，解除冻结"
+      },
+      "description": "解冻指定号码"
+    },
+    {
+      "name": "释放号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/release",
+      "params": {
+        "remark": "客户主动释放"
+      },
+      "description": "释放指定号码"
+    },
+    {
+      "name": "回收号码",
+      "method": "PUT",
+      "url": "/msisdn/number/13800138000/recycle",
+      "params": {
+        "remark": "长期未使用，系统回收"
+      },
+      "description": "回收指定号码"
+    },
+    {
+      "name": "批量操作号码",
+      "method": "PUT",
+      "url": "/msisdn/number/batch-operation",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": ["13800138000", "13800138001", "13800138002"],
+      "params": {
+        "operationType": 2,
+        "remark": "批量预留操作"
+      },
+      "description": "批量操作多个号码，操作类型：1-创建，2-预留，3-分配，4-激活，5-冻结，6-解冻，7-释放，8-回收"
+    },
+    {
+      "name": "获取号码详情",
+      "method": "GET",
+      "url": "/msisdn/number/detail/13800138000",
+      "description": "获取指定号码的详细信息"
+    },
+    {
+      "name": "获取号码统计信息",
+      "method": "GET",
+      "url": "/msisdn/number/statistics",
+      "description": "获取号码资源的统计信息"
+    }
+  ]
+}

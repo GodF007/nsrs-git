@@ -1,0 +1,111 @@
+# NSRS应用Deployment配置
+# 作用：定义NSRS应用的部署规格，包括副本数、资源限制、健康检查等
+# 说明：配置了容器镜像、环境变量、配置文件挂载和服务探针
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsrs
+  namespace: nsrs
+  labels:
+    app: nsrs
+    version: v1
+    component: backend
+  annotations:
+    description: "NSRS系统后端应用部署配置"
+spec:
+  replicas: 2  # 副本数，生产环境可根据需要调整
+  selector:
+    matchLabels:
+      app: nsrs
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: nsrs
+        version: v1
+        backend: java
+        component: backend
+    spec:
+      containers:
+      - name: nsrs
+        image: 10.21.1.210:5000/nsrs:1.0.0  # 镜像地址，需要根据实际构建的镜像修改
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: 8088  # HTTP服务端口，业务接口和管理端点共用
+            protocol: TCP
+        env:
+          # Java虚拟机参数配置
+          - name: JAVA_OPTS
+            value: "-Duser.timezone=Asia/Shanghai -Xmx1024m -Xms512m -Dts.enable=false -Dswagger.enable=true -Dspringfox.documentation.enabled=false -Dstart.java.jar=true"
+          # 时区设置
+          - name: TZ
+            value: "Asia/Shanghai"
+          # Spring配置文件路径
+          - name: SPRING_CONFIG_LOCATION
+            value: "/app/application-sharding.yml"
+        volumeMounts:
+        # 挂载应用配置文件
+        - name: nsrs-config
+          mountPath: /app/application-sharding.yml
+          subPath: application-sharding.yml
+          readOnly: true
+        resources:
+          requests:
+            memory: "512Mi"  # 最小内存需求
+            cpu: "250m"     # 最小CPU需求
+          limits:
+            memory: "1Gi"   # 最大内存限制
+            cpu: "500m"     # 最大CPU限制
+        # 存活探针 - 检查应用是否正常运行
+        livenessProbe:
+          httpGet:
+            path: /nsrs/actuator/health  # 健康检查端点
+            port: 8088  # 管理端口，与业务接口共用
+          initialDelaySeconds: 900  # 初始延迟5分钟，等待应用完全启动
+          periodSeconds: 60         # 每60秒检查一次
+          timeoutSeconds: 30        # 超时时间30秒
+          failureThreshold: 3       # 连续失败3次重启容器
+        # 就绪探针 - 检查应用是否准备好接收流量
+        readinessProbe:
+          httpGet:
+            path: /nsrs/actuator/health
+            port: 8088  # 管理端口，与业务接口共用
+          initialDelaySeconds: 900  # 初始延迟5分钟
+          periodSeconds: 30         # 每30秒检查一次
+          timeoutSeconds: 15        # 超时时间15秒
+          failureThreshold: 3       # 连续失败3次标记为未就绪
+      volumes:
+      # 配置文件卷
+      - name: nsrs-config
+        configMap:
+          name: nsrs-config  # 引用ConfigMap名称
+          defaultMode: 0644  # 文件权限
+
+---
+# NSRS应用Service配置
+# 作用：为NSRS应用提供集群内部的服务发现和负载均衡
+# 说明：暴露HTTP端口8080，供其他服务或Ingress访问
+apiVersion: v1
+kind: Service
+metadata:
+  name: nsrs-service
+  namespace: nsrs
+  labels:
+    app: nsrs
+    service: nsrs-service
+    component: backend
+  annotations:
+    description: "NSRS系统HTTP服务，提供REST API和Web界面访问"
+spec:
+  type: NodePort  # NodePort类型，允许外部通过节点IP:NodePort访问
+  selector:
+    app: nsrs
+    version: v1
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8088        # 服务端口
+      targetPort: 8088  # 容器端口
+      nodePort: 30088   # 外部访问端口，范围30000-32767
+  sessionAffinity: None  # 不启用会话亲和性，支持负载均衡

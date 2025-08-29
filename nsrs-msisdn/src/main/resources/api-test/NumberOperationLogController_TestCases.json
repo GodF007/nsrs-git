@@ -1,0 +1,46 @@
+{
+  "info": {
+    "name": "号码操作日志接口测试用例",
+    "description": "NumberOperationLogController 所有接口的测试用例",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:8080",
+  "testCases": [
+    {
+      "name": "分页查询操作日志",
+      "method": "GET",
+      "url": "/msisdn/operationLog/page",
+      "params": {
+        "current": 1,
+        "size": 10,
+        "number": "13888888888",
+        "operationType": "ALLOCATE",
+        "operatorName": "张三",
+        "startTime": "2024-01-01 00:00:00",
+        "endTime": "2024-12-31 23:59:59"
+      },
+      "description": "分页查询号码操作日志，支持按号码、操作类型、操作人、时间范围筛选"
+    },
+    {
+      "name": "根据号码ID查询操作日志",
+      "method": "GET",
+      "url": "/msisdn/operationLog/listByNumberId/1",
+      "params": {
+        "current": 1,
+        "size": 20
+      },
+      "description": "根据号码ID查询该号码的所有操作日志记录"
+    },
+    {
+      "name": "获取操作日志统计信息",
+      "method": "GET",
+      "url": "/msisdn/operationLog/statistics",
+      "params": {
+        "startTime": "2024-01-01",
+        "endTime": "2024-12-31",
+        "operationType": "ALLOCATE"
+      },
+      "description": "获取指定时间范围内的操作日志统计信息，可按操作类型筛选"
+    }
+  ]
+}

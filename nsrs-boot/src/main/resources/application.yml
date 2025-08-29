@@ -1,0 +1,86 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /nsrs
+
+spring:
+  application:
+    name: nsrs
+  profiles:
+    active: sharding
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: servlet
+    allow-circular-references: true  # 允许循环引用，解决Swagger的NPE问题
+  
+  # Jackson全局日期格式配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+#  autoconfigure:
+#    exclude:
+#      - org.springdoc.core.SpringDocConfiguration
+#      - springfox.boot.starter.autoconfigure.SwaggerAutoConfiguration
+#      - com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration
+
+# Knife4j配置 - 统一API文档
+knife4j:
+  enable: true
+  production: false
+  basic:
+    enable: false
+    username: admin
+    password: 123456
+  setting:
+    language: zh-CN
+    enableSwaggerModels: false
+    enableDocumentManage: false
+    swaggerModelName: 实体类列表
+    enableVersion: false
+    enableReloadCacheParameter: false
+    enableAfterScript: false
+    enableFilterMultipartApiMethodType: POST
+    enableFilterMultipartApis: false
+    enableRequestCache: false
+    enableHost: false
+    enableHostText: http://localhost:8088
+    enableHomeCustom: false
+    homeCustomLocation: classpath:doc/home.md
+    enableSearch: false
+    enableFooter: false
+    enableFooterCustom: false
+    footerCustomContent: Copyright © 2025 NSRS系统
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.nsrs.**.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置
+logging:
+  level:
+    com.nsrs: debug
+    org.springframework: warn
+    springfox: warn
+    io.swagger: warn
+
+# 系统配置
+nsrs:
+  auth:
+    enabled: true  # 是否启用内置权限系统，设置为false则集成外部权限系统
