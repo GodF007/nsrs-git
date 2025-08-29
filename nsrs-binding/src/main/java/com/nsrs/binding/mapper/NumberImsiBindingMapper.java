@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nsrs.binding.entity.NumberImsiBinding;
 import org.apache.ibatis.annotations.Mapper;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public interface NumberImsiBindingMapper extends BaseMapper<NumberImsiBinding> {
      */
     IPage<NumberImsiBinding> selectPageWithParams(Page<NumberImsiBinding> page, @Param("params") Map<String, Object> params, @Param("tableName") String tableName);
     
+
+
     /**
      * 根据号码查询绑定关系
      *

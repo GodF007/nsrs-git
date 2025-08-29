@@ -9,7 +9,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+
+
     <artifactId>nsrs-busacc</artifactId>
+
     <name>NSRS: Business Acceptance Module</name>
     <description>Business Acceptance Module for NSRS</description>
 
